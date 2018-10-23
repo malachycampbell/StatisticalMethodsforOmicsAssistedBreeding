@@ -38,7 +38,7 @@ Slides for short course on 'omics assisted breeding methods.
 
 
 **Day 2**
-  - 9:00-9:30 Genomic heritability (MC, GM) [Slides](https://rawgit.com/malachycampbell/UStatisticalMethodsforOmicsAssistedBreeding/master/GenomicHeritability/)
+  - 9:00-9:30 Genomic heritability (MC, GM) [PDF Slides](https://rawgit.com/malachycampbell/UStatisticalMethodsforOmicsAssistedBreeding/master/GenomicHeritability/GenomicHerit_10-23.pdf)[.Rmd](https://rawgit.com/malachycampbell/UStatisticalMethodsforOmicsAssistedBreeding/master/GenomicHeritability/GenomicHerit_10-23.Rmd)
   - 9:30-9:40 Break
   - 9:40-12:00 GWAS (HI)
   - 12:00-13:00 Lunch
