@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Malachy Campbell" />
+
+<meta name="date" content="2018-10-25" />
+
+<title>Lab: Applications for Ordinary Least Squares and Mixed Models</title>
+
+<script src="OLS_MM_Ex_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="OLS_MM_Ex_files/bootstrap-3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+<script src="OLS_MM_Ex_files/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+<script src="OLS_MM_Ex_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="OLS_MM_Ex_files/navigation-1.1/tabsets.js"></script>
+<script src="OLS_MM_Ex_files/navigation-1.1/codefolding.js"></script>
+<link href="OLS_MM_Ex_files/magnific-popup-1.1.0/magnific-popup.css" rel="stylesheet" />
+<script src="OLS_MM_Ex_files/magnific-popup-1.1.0/jquery.magnific-popup.min.js"></script>
+<link href="OLS_MM_Ex_files/clean-0.1/clean.css" rel="stylesheet" />
+<script src="OLS_MM_Ex_files/clean-0.1/clean.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span. { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+</style>
+<div class="container-fluid main-container">
+  <div class="row">
+     <div class="col-md-10">
+
+
+
+
+<div id="header">
+<h1 class="title">Lab: Applications for Ordinary Least Squares and Mixed Models</h1>
+<h4 class="author"><em>Malachy Campbell</em></h4>
+<h4 class="date"><em>10/25/2018</em></h4>
+</div>
+
+<div id="content">
+<div id="ols-and-mm-example-1-balanced-maize-data" class="section level1">
+<h1>OLS and MM example 1: Balanced maize data</h1>
+<p>The objective of these exercises is to (1) give a brief overview of ordinary least squares and mixed models, and (2) show how these approaches can be applied for plant breeding and/or genetics. For this first example I will demonstrate the use of OLS and MM for estimating hertiability and predicting genetic values (e.g. BLUEs and BLUPs). Here, we will use a maize data set from of 62 recombinant inbred line (RILs) from a cross between B73 and MO17. The experiment follows a randomized complete block design with two replications at four locations. Four traits were recorded for each plot: days to pollen, days to silking, anthesis/silking interval (ASI) and plant height. For these examples we’ll use height as the response variable.</p>
+<div id="load-packages" class="section level3">
+<h3>Load packages</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">#install.packages(lme4)</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">#install.packages(lsmeans)</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(lme4)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(lsmeans)</a></code></pre></div>
+</div>
+<div id="loading-the-data." class="section level3">
+<h3>Loading the data.</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">maize &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;~/Downloads/MaizeRILs.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">head</span>(maize)</a></code></pre></div>
+</div>
+<div id="obtaining-line-means-with-ols" class="section level2">
+<h2>Obtaining line means with OLS</h2>
+<p>For this dataset we can fit the following model: <span class="math display">\[y_{ijk} = \mu + L_i + Rep(L)_{ij} + G_k + GL_{ik} + e_{ijk}\]</span>, where <span class="math inline">\(y_{ijk}\)</span> is the phenotype (height), <span class="math inline">\(L_i\)</span> is the fixed effect of location <span class="math inline">\(i\)</span>, <span class="math inline">\(Rep(L)_{ij}\)</span> is the fixed effect of replicate <span class="math inline">\(j\)</span> nested within location <span class="math inline">\(i\)</span>, <span class="math inline">\(G_k\)</span> is the fixed effect of RIL <span class="math inline">\(k\)</span>, <span class="math inline">\(GL_{ik}\)</span> is the interaction of RIL <span class="math inline">\(k\)</span> and location <span class="math inline">\(i\)</span> and <span class="math inline">\(e_{ijk}\)</span> is the residual.</p>
+<div id="running-anova" class="section level3">
+<h3>Running ANOVA</h3>
+<p>Here’s everything except the error term is considered as a fixed effect. First, we’ll fit the linear model and test the significance of each term with an ANOVA.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">#rep is coded as 1 and 2. So make sure R knows its a factor</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">maize<span class="op">$</span>rep &lt;-<span class="st"> </span><span class="kw">as.factor</span>(maize<span class="op">$</span>rep)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">mod1 &lt;-<span class="st"> </span><span class="kw">lm</span>(height <span class="op">~</span><span class="st"> </span>location<span class="op">*</span>RIL <span class="op">+</span><span class="st"> </span>rep<span class="op">:</span>location, <span class="dt">data =</span> maize)</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw">anova</span>(mod1)</a></code></pre></div>
+</div>
+<div id="calculating-marginal-means" class="section level3">
+<h3>Calculating marginal means</h3>
+<p>For each RIL, we can use the output of lm to estimate the marginal means. For RIL-11 we can calculate the marginal means as <span class="math display">\[RIL11 = \mu + \bar{L} + G_{RIL11} + \bar{GL}_{RIL11} + \bar{Rep(L)}\]</span></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">#intercept</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">MU &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">coef</span>(mod1)[<span class="st">&quot;(Intercept)&quot;</span>] )</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">#locations</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">LOC.eff &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="kw">as.numeric</span>(<span class="kw">coef</span>(mod1)[<span class="kw">c</span>(<span class="st">&quot;locationCLY&quot;</span>,<span class="st">&quot;locationPPAC&quot;</span>,<span class="st">&quot;locationTPAC&quot;</span>)] ))<span class="op">/</span><span class="dv">4</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#RIL</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">RIL1.eff &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">coef</span>(mod1)[<span class="st">&quot;RILRIL-11&quot;</span>] )</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">#RIL x Location</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">RIL1.LOC.eff &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="kw">as.numeric</span>(<span class="kw">coef</span>(mod1)[<span class="kw">c</span>(<span class="st">&quot;locationCLY:RILRIL-11&quot;</span>,<span class="st">&quot;locationPPAC:RILRIL-11&quot;</span>,<span class="st">&quot;locationTPAC:RILRIL-11&quot;</span>)] ))<span class="op">/</span><span class="dv">4</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="co">#Rep within location</span></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">Rep.eff &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="kw">as.numeric</span>(<span class="kw">coef</span>(mod1)[<span class="kw">c</span>(<span class="st">&quot;locationARC:rep2&quot;</span>, <span class="st">&quot;locationCLY:rep2&quot;</span>, <span class="st">&quot;locationPPAC:rep2&quot;</span>,<span class="st">&quot;locationTPAC:rep2&quot;</span>)] ))<span class="op">/</span><span class="dv">8</span></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">RIL_<span class="dv">11</span> &lt;-<span class="st"> </span>MU <span class="op">+</span><span class="st"> </span>LOC.eff <span class="op">+</span><span class="st"> </span>RIL1.eff <span class="op">+</span><span class="st"> </span>RIL1.LOC.eff <span class="op">+</span><span class="st"> </span>Rep.eff</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">##Alternativly you can use the LSmeans package</span></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="kw">library</span>(lsmeans)</a>
+<a class="sourceLine" id="cb4-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17"><span class="kw">print</span>(<span class="kw">summary</span>(<span class="kw">lsmeans</span>(mod1, <span class="st">&quot;RIL&quot;</span>))[<span class="dv">2</span>,])</a></code></pre></div>
+</div>
+</div>
+<div id="estimating-heritability-from-anovaols" class="section level2">
+<h2>Estimating heritability from ANOVA/OLS</h2>
+<p>Since the design is balanced we can estimate <span class="math inline">\(H^2\)</span> using ANOVA. Here, <span class="math display">\[H^2 = \frac{ \sigma_{RIL}^2 }{ \sigma_{RIL}^2 + \sigma_{RIL \times LOC}^2 + \sigma_e^2 }\]</span>.</p>
+<p>These can be extracted form the ANOVA table. Here, <span class="math inline">\(\sigma_{RIL \times LOC}^2 = \frac{MS(RIL \times LOC) - MS(Error)}{n_r}\)</span>, <span class="math inline">\(\sigma_{RIL}^2 = \frac{MS(RIL) - MS(RIL \times LOC)}{n_r n_l}\)</span>, and<br />
+<span class="math inline">\(\sigma_e^2 = MS(Error)\)</span>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">anova.res &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">anova</span>(mod1))</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">sigma_err &lt;-<span class="st"> </span>anova.res[<span class="dv">5</span>,<span class="dv">3</span>] <span class="co">#64.88623</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">sigma_G.E &lt;-<span class="st"> </span>(anova.res[<span class="dv">3</span>,<span class="dv">3</span>] <span class="op">-</span><span class="st"> </span>sigma_err) <span class="op">/</span><span class="st"> </span><span class="dv">2</span>  </a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">sigma_G &lt;-<span class="st"> </span>(anova.res[<span class="dv">2</span>,<span class="dv">3</span>] <span class="op">-</span><span class="st"> </span>anova.res[<span class="dv">3</span>,<span class="dv">3</span>]) <span class="op">/</span><span class="st"> </span><span class="dv">8</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">H2.OLS &lt;-<span class="st"> </span>sigma_G <span class="op">/</span><span class="st"> </span>(sigma_G <span class="op">+</span><span class="st"> </span>sigma_G.E <span class="op">+</span><span class="st"> </span>sigma_err)</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="kw">print</span>(H2.OLS)</a></code></pre></div>
+</div>
+<div id="obtaining-genetic-values-blues-with-a-mixed-model" class="section level2">
+<h2>Obtaining genetic values (BLUEs) with a mixed model</h2>
+<p>Here, we will fit a mixed model to estimate line values for each RIL. In this model we will consider RIL as a fixed effect, and location and rep as random effects. We make the following assumptions for the random terms <span class="math inline">\(Var(Loc) \sim N(0, \sigma^2_{LOC})\)</span>, <span class="math inline">\(Var(rep) \sim N(0, \sigma^2_{rep})\)</span>, and <span class="math inline">\(Var(e) \sim N(0, \sigma^2_{e})\)</span>. We can fit this model using the lme4 package in R. Here, random terms are specified by ‘(1|some term)’.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">mod2 &lt;-<span class="st"> </span><span class="kw">lmer</span>(height <span class="op">~</span><span class="st"> </span>RIL <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>location<span class="op">/</span>rep) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>location<span class="op">:</span>RIL), maize)</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="co">#List the estimates for the fixed effects</span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="kw">summary</span>(mod2)<span class="op">$</span>coefficients[<span class="dv">1</span>,<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="kw">summary</span>(mod2)<span class="op">$</span>coefficients[<span class="dv">2</span>,<span class="dv">1</span>]</a></code></pre></div>
+<p><strong>What is the BLUE for RIL-11? Is the the same for OLS?</strong></p>
+</div>
+<div id="estimating-heritability-with-a-mixed-model" class="section level2">
+<h2>Estimating heritability with a mixed model</h2>
+<p>Now, we can estimate the variance components using a mixed model. Here, all terms with the exception of <span class="math inline">\(\mu\)</span> will be considered random.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">mod3 &lt;-<span class="st"> </span><span class="kw">lmer</span>(height <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>RIL) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>location<span class="op">/</span>rep) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>location<span class="op">:</span>RIL), maize)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">#extract the variance components</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">MM.varcomps &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">VarCorr</span>(mod3))</a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">sigma_err.MM &lt;-<span class="st"> </span>MM.varcomps[<span class="dv">5</span>,<span class="dv">4</span>]</a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">sigma_G.E.MM &lt;-<span class="st"> </span>MM.varcomps[<span class="dv">1</span>,<span class="dv">4</span>] </a>
+<a class="sourceLine" id="cb7-8" data-line-number="8">sigma_G.MM &lt;-<span class="st"> </span>MM.varcomps[<span class="dv">2</span>,<span class="dv">4</span>]</a>
+<a class="sourceLine" id="cb7-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb7-10" data-line-number="10">H2.MM &lt;-<span class="st"> </span>sigma_G.MM <span class="op">/</span><span class="st"> </span>(sigma_G.MM <span class="op">+</span><span class="st"> </span>sigma_G.E.MM <span class="op">+</span><span class="st"> </span>sigma_err.MM)</a>
+<a class="sourceLine" id="cb7-11" data-line-number="11"><span class="kw">print</span>(H2.MM)</a></code></pre></div>
+<p><strong>What is the estimate for <span class="math inline">\(H^2\)</span> from MM? Is the the same for OLS?</strong></p>
+</div>
+<div id="blups-for-maize-height" class="section level2">
+<h2>BLUPs for maize height</h2>
+<p>When we want to make a prediction on a random term in the model the predicted value is called BLUP. Here we will predict the BLUPs for each RIL and compared the results to BLUEs from the MM, and marginal means from the OLS approach.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">mod3 &lt;-<span class="st"> </span><span class="kw">lmer</span>(height <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>RIL) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>location<span class="op">/</span>rep) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>location<span class="op">:</span>RIL), maize)</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="co">#extract the blups for RILs</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">blups_m3 &lt;-<span class="st"> </span><span class="kw">ranef</span>(mod3)<span class="op">$</span>RIL</a></code></pre></div>
+</div>
+</div>
+<div id="ols-and-mm-example-2-unbalanced-maize-data" class="section level1">
+<h1>OLS and MM example 2: Unbalanced maize data</h1>
+<p>What if the dataset is unbalanced? Most plant breeding studies will have missing data. Can we use the same approaches before for these unbalanced datasets?</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">#Some RILs are not included at all locations</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">maize.na &lt;-<span class="st"> </span>maize</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">maize.na[ (maize<span class="op">$</span>RIL <span class="op">%in%</span><span class="st"> </span><span class="kw">unique</span>(maize<span class="op">$</span>RIL)[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]) <span class="op">&amp;</span><span class="st"> </span>(maize<span class="op">$</span>location <span class="op">==</span><span class="st"> </span><span class="kw">unique</span>(maize<span class="op">$</span>location)[<span class="dv">1</span>]) ,]<span class="op">$</span>height &lt;-<span class="st"> </span><span class="ot">NA</span></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">maize.na[ (maize<span class="op">$</span>RIL <span class="op">%in%</span><span class="st"> </span><span class="kw">unique</span>(maize<span class="op">$</span>RIL)[<span class="dv">55</span><span class="op">:</span><span class="dv">62</span>]) <span class="op">&amp;</span><span class="st"> </span>(maize<span class="op">$</span>location <span class="op">==</span><span class="st"> </span><span class="kw">unique</span>(maize<span class="op">$</span>location)[<span class="dv">4</span>]) ,]<span class="op">$</span>height &lt;-<span class="st"> </span><span class="ot">NA</span></a></code></pre></div>
+<div id="question-1-estimate-h2" class="section level2">
+<h2>Question 1: Estimate <span class="math inline">\(H^2\)</span></h2>
+<p>Estimate <span class="math inline">\(H^2\)</span> using ANOVA and MM for the unbalanced maize data.</p>
+<p>Are these estimates the same?</p>
+<p>Which estimate of <span class="math inline">\(H^2\)</span> do you think is more reliable? Why?</p>
+</div>
+<div id="question-2-estimate-blues" class="section level2">
+<h2>Question 2: Estimate BLUEs</h2>
+<p>Estimate BLUEs for RIL-11 and RIL-34 using OLS and MM for the missing data. Compare these values between approaches, as well as estimates between missing and full datasets.</p>
+<p>Are they different?</p>
+<p>If so, why?</p>
+</div>
+</div>
+</div>
+
+
+    </div>
+    <div class="col-md-2">
+            <div id="toc">
+      	<button type="button" class="close">×</button>
+        <ul>
+        <li><a href="#ols-and-mm-example-1-balanced-maize-data">OLS and MM example 1: Balanced maize data</a><ul>
+        <li><a href="#obtaining-line-means-with-ols">Obtaining line means with OLS</a></li>
+        <li><a href="#estimating-heritability-from-anovaols">Estimating heritability from ANOVA/OLS</a></li>
+        <li><a href="#obtaining-genetic-values-blues-with-a-mixed-model">Obtaining genetic values (BLUEs) with a mixed model</a></li>
+        <li><a href="#estimating-heritability-with-a-mixed-model">Estimating heritability with a mixed model</a></li>
+        <li><a href="#blups-for-maize-height">BLUPs for maize height</a></li>
+        </ul></li>
+        <li><a href="#ols-and-mm-example-2-unbalanced-maize-data">OLS and MM example 2: Unbalanced maize data</a><ul>
+        <li><a href="#question-1-estimate-h2">Question 1: Estimate <span class="math inline">\(H^2\)</span></a></li>
+        <li><a href="#question-2-estimate-blues">Question 2: Estimate BLUEs</a></li>
+        </ul></li>
+        </ul>
+      </div>
+          </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function () {
+
+  // add bootstrap table styles to pandoc tables
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+
+});
+</script>
+
+<script>
+$(document).ready(function () {
+ 	 	$('#content img')
+ 	  .addClass("image-thumb");
+      $('#content img')
+ 	  .addClass("image-lb");
+  $('#content').magnificPopup({
+	      type:'image',
+	      closeOnContentClick: false,
+	      closeBtnInside: false,
+	      delegate: 'img',
+	      gallery: {enabled: false },
+	      image: {
+	        verticalFit: true,
+          titleSrc: 'alt'
+	      }
+ 	    });
+ 	});
+</script>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

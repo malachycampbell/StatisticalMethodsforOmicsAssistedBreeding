@@ -1,0 +1,172 @@
+---
+title: "Lab: Applications for Ordinary Least Squares and Mixed Models"
+author: "Malachy Campbell"
+date: "10/25/2018"
+output:
+  rmdformats::html_clean:
+    highlight: kate
+    self_contained: no
+---
+
+---
+title: ""
+date: "`r Sys.Date()`"
+output:
+  rmdformats::html_clean:
+    highlight: kate
+---
+
+
+```{r knitr_init, echo=FALSE, cache=FALSE}
+library(knitr)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=FALSE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+```
+
+# OLS and MM example 1: Balanced maize data
+The objective of these exercises is to (1) give a brief overview of ordinary least squares and mixed models, and (2) show how these approaches can be applied for plant breeding and/or genetics. For this first example I will demonstrate the use of OLS and MM for estimating hertiability and predicting genetic values (e.g. BLUEs and BLUPs). Here, we will use a maize data set from of 62 recombinant inbred line (RILs) from a cross between B73 and MO17. The experiment follows a randomized complete block design with two replications at four locations. Four traits were recorded for each plot: days to pollen, days to silking, anthesis/silking interval (ASI) and plant height. For these examples we'll use height as the response variable.
+
+### Load packages 
+```{r load packages, echo = T, eval = F}
+#install.packages(lme4)
+#install.packages(lsmeans)
+library(lme4)
+library(lsmeans)
+```
+
+### Loading the data. 
+```{r load data, echo = T, eval = F}
+maize <- read.csv("~/Downloads/MaizeRILs.csv")
+
+head(maize)
+```
+
+## Obtaining line means with OLS
+For this dataset we can fit the following model:
+$$y_{ijk} = \mu + L_i + Rep(L)_{ij} + G_k + GL_{ik} + e_{ijk}$$, 
+where $y_{ijk}$ is the phenotype (height),  $L_i$ is the fixed effect of location $i$, $Rep(L)_{ij}$ is the fixed effect of replicate $j$ nested within location $i$, $G_k$ is the fixed effect of RIL $k$, $GL_{ik}$ is the interaction of RIL $k$ and location $i$ and $e_{ijk}$ is the residual.
+
+### Running ANOVA
+Here's everything except the error term is considered as a fixed effect. First, we'll fit the linear model and test the significance of each term with an ANOVA.
+```{r run anova for maize, echo = T, eval = F}
+#rep is coded as 1 and 2. So make sure R knows its a factor
+maize$rep <- as.factor(maize$rep)
+mod1 <- lm(height ~ location*RIL + rep:location, data = maize)
+
+anova(mod1)
+```
+
+### Calculating marginal means
+For each RIL, we can use the output of lm to estimate the marginal means. For RIL-11 we can calculate the marginal means as 
+$$RIL11 = \mu + \bar{L} + G_{RIL11} + \bar{GL}_{RIL11} + \bar{Rep(L)}$$
+
+```{r marginal means for RIL11, echo = T, eval = F}
+#intercept
+MU <- as.numeric(coef(mod1)["(Intercept)"] )
+#locations
+LOC.eff <- sum(as.numeric(coef(mod1)[c("locationCLY","locationPPAC","locationTPAC")] ))/4
+#RIL
+RIL1.eff <- as.numeric(coef(mod1)["RILRIL-11"] )
+#RIL x Location
+RIL1.LOC.eff <- sum(as.numeric(coef(mod1)[c("locationCLY:RILRIL-11","locationPPAC:RILRIL-11","locationTPAC:RILRIL-11")] ))/4
+#Rep within location
+Rep.eff <- sum(as.numeric(coef(mod1)[c("locationARC:rep2", "locationCLY:rep2", "locationPPAC:rep2","locationTPAC:rep2")] ))/8
+
+RIL_11 <- MU + LOC.eff + RIL1.eff + RIL1.LOC.eff + Rep.eff
+
+##Alternativly you can use the LSmeans package
+library(lsmeans)
+
+print(summary(lsmeans(mod1, "RIL"))[2,])
+```
+
+## Estimating heritability from ANOVA/OLS
+Since the design is balanced we can estimate $H^2$ using ANOVA. Here, $$H^2 = \frac{ \sigma_{RIL}^2 }{ \sigma_{RIL}^2 + \sigma_{RIL \times LOC}^2 + \sigma_e^2 }$$.
+
+These can be extracted form the ANOVA table. 
+Here, $\sigma_{RIL \times LOC}^2 = \frac{MS(RIL \times LOC) - MS(Error)}{n_r}$, $\sigma_{RIL}^2 = \frac{MS(RIL) - MS(RIL \times LOC)}{n_r n_l}$, and  
+$\sigma_e^2 = MS(Error)$.
+
+```{r H2 for maize height, eval = F, echo = T}
+anova.res <- as.data.frame(anova(mod1))
+
+sigma_err <- anova.res[5,3] #64.88623
+sigma_G.E <- (anova.res[3,3] - sigma_err) / 2  
+sigma_G <- (anova.res[2,3] - anova.res[3,3]) / 8
+
+H2.OLS <- sigma_G / (sigma_G + sigma_G.E + sigma_err)
+print(H2.OLS)
+```
+
+## Obtaining genetic values (BLUEs) with a mixed model
+Here, we will fit a mixed model to estimate line values for each RIL. In this model we will consider RIL as a fixed effect, and location and rep as random effects. We make the following assumptions for the random terms $Var(Loc) \sim N(0, \sigma^2_{LOC})$, $Var(rep) \sim N(0, \sigma^2_{rep})$, and $Var(e) \sim N(0, \sigma^2_{e})$. We can fit this model using the lme4 package in R. Here, random terms are specified by '(1|some term)'.
+
+```{r MM BLUEs for maize height, eval = F, echo = T}
+mod2 <- lmer(height ~ RIL + (1|location/rep) + (1|location:RIL), maize)
+
+#List the estimates for the fixed effects
+summary(mod2)$coefficients[1,1] + summary(mod2)$coefficients[2,1]
+```
+**What is the BLUE for RIL-11? Is the the same for OLS?**
+
+## Estimating heritability with a mixed model
+Now, we can estimate the variance components using a mixed model. Here, all terms with the exception of $\mu$ will be considered random. 
+
+```{r MM H2 maize height, eval = F, echo = T}
+mod3 <- lmer(height ~ 1 + (1|RIL) + (1|location/rep) + (1|location:RIL), maize)
+
+#extract the variance components
+MM.varcomps <- as.data.frame(VarCorr(mod3))
+
+sigma_err.MM <- MM.varcomps[5,4]
+sigma_G.E.MM <- MM.varcomps[1,4] 
+sigma_G.MM <- MM.varcomps[2,4]
+
+H2.MM <- sigma_G.MM / (sigma_G.MM + sigma_G.E.MM + sigma_err.MM)
+print(H2.MM)
+```
+
+**What is the estimate for $H^2$ from MM? Is the the same for OLS?**
+
+## BLUPs for maize height
+When we want to make a prediction on a random term in the model the predicted value is called BLUP. Here we will predict the BLUPs for each RIL and compared the results to BLUEs from the MM, and marginal means from the OLS approach. 
+
+```{r MM blups maize height, eval = F, echo = T}
+mod3 <- lmer(height ~ 1 + (1|RIL) + (1|location/rep) + (1|location:RIL), maize)
+
+#extract the blups for RILs
+blups_m3 <- ranef(mod3)$RIL
+```
+
+# OLS and MM example 2: Unbalanced maize data
+What if the dataset is unbalanced? Most plant breeding studies will have missing data. Can we use the same approaches before for these unbalanced datasets?
+
+```{r make unbalanced maize data, eval = F, echo = T}
+#Some RILs are not included at all locations
+maize.na <- maize
+maize.na[ (maize$RIL %in% unique(maize$RIL)[1:10]) & (maize$location == unique(maize$location)[1]) ,]$height <- NA
+maize.na[ (maize$RIL %in% unique(maize$RIL)[55:62]) & (maize$location == unique(maize$location)[4]) ,]$height <- NA
+```
+
+## Question 1: Estimate $H^2$ 
+Estimate $H^2$ using ANOVA and MM for the unbalanced maize data. 
+
+Are these estimates the same? 
+
+Which estimate of $H^2$ do you think is more reliable? Why? 
+
+## Question 2: Estimate BLUEs
+Estimate BLUEs for RIL-11 and RIL-34 using OLS and MM for the missing data. Compare these values between approaches, as well as estimates between missing and full datasets. 
+
+Are they different? 
+
+If so, why?
