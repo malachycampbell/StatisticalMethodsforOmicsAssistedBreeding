@@ -33,7 +33,7 @@ Slides for short course on 'omics assisted breeding methods.
   - 14:00-14:10: Break
   - 14:10-15:40: Least squares and Linear mixed model (MC, JT)
     - Lab slides [[PDF Slides]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/OLS.MM/OLS_MM_LabSlides.pdf)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/OLS.MM/OLS_MM_LabSlides.Rmd)
-    - Excercises [[HTML]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/OLS.MM/OLS_MM_Ex.html)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/OLS.MM/OLS_MM_Ex.Rmd)
+    - Exercises [[HTML]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/OLS.MM/OLS_MM_Ex.html)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/OLS.MM/OLS_MM_Ex.Rmd)
     - Data [[.csv]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/OLS.MM/MaizeRILs.csv)
   - 15:40-15:50: Break
   - 15:50-16:50 Bayesian methods (JT)
