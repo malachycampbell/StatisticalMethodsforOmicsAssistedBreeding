@@ -46,6 +46,7 @@ Slides for short course on 'omics assisted breeding methods.
   - 9:40-12:00 GWAS (HI)
   - 12:00-13:00 Lunch
   - 13:00-14:00 GBLUP and RR-BLUP (MC, GM)
+    - Lab slides [[PDF Slides]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/tree/master/gBLUP_rrBLUP/gBLUP_RRBLUP_LabSlides.pdf)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/tree/master/gBLUP_rrBLUP/gBLUP_RRBLUP_LabSlides.Rmd)[[Data]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/tree/master/gBLUP_rrBLUP/SpindellData.zip)
   - 14:00-15:00 Bayesian alphabet (DJ)
   - 15:00-15:10 Break
   - 15:10-16:10 Classical GxE including FW, AMMI, and biplot (HI, DJ)
