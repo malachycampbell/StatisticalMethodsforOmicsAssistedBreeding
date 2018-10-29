@@ -1,0 +1,182 @@
+---
+title: "Lab: genomic BLUP and ridge regression BLUP"
+author: "Malachy Campbell"
+date: "10/25/2018"
+output:
+  rmdformats::html_clean:
+    highlight: kate
+    self_contained: no
+---
+
+---
+title: ""
+date: "`r Sys.Date()`"
+output:
+  rmdformats::html_clean:
+    highlight: kate
+---
+
+
+```{r knitr_init, echo=FALSE, cache=FALSE}
+library(knitr)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=FALSE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rrBLUP)
+```
+
+
+# Genomic prediction using genomic BLUP and ridge regression BLUP: Zhao data
+The data is for 34 traits for a rice diversity panel evaluated. The raw data can be downloaded here: [Rice Diversity](http://ricediversity.org/data/sets/44kgwas). For convinience, I have also provided the necessary files here [GitHub](XXXX). Below I've provided a few examples of how to process some genotypic data in PLINK format, and a chunk of code to do one round of two-fold cross validation. You will have to modify these codes slightly to accomidate you own data
+
+# Load and clean up phentypic data
+The phenotypic data has two columns of identifiers, 'HybID' and 'NSFTVID'. For this example I will use plant height as the phenotype and NSFTVID as the identifier.
+```{r load Zhao data, echo = T}
+#phenotypes
+pheno <- read.table("~/Downloads/ZhaoData/RiceDiversity_44K_Phenotypes_34traits_PLINK.txt", sep = "\t", header = T)
+
+head(pheno[,1:10])
+
+pheno <- pheno[c("NSFTVID", "Plant.height")]
+
+#How many have missing data?
+sum(is.na(pheno$Plant.height))
+
+#Remove all lines with out a record for plant height
+pheno <- pheno[!is.na(pheno$Plant.height) ,]
+dim(pheno)
+```
+
+
+# Read in genotype data and reformat it.
+[Plink](http://zzz.bwh.harvard.edu/plink/) is a software program that is widely used for genetic analyses using SNP data. It is very popular in human genetics, and as a result, their format has become widely used to store genotypic data. 
+
+The files usually consist of a pedigree (.ped) file that has all the genotypic data and some meta data. The first six columns are: Family ID, Individual ID, Paternal ID, Maternal ID, Sex (1=male; 2=female; other=unknown), Phenotype. The following columns are the alleles for each biallelic SNP. Each allele has its own column (no. columns = 2* No SNPs + 6). The family (.fam ) file is just the first six columns of the .ped file. Finally, a map file (.map) is provided that lists the SNP name, chromosome, and position for each SNP
+
+We'll use the BGLR package to load SNP data into R.
+```{r load genotypic data, echo = T}
+library(BGLR)
+
+#BGLR doesn't like the tilde shortcut in mac, so you'll have to provide the full path
+FAM <- read.table("/Users/malachycampbell/Downloads/ZhaoData/RiceDiversity_44K_Genotypes_PLINK/sativas413.fam")[1:2]
+PED <- read_ped("/Users/malachycampbell/Downloads/ZhaoData/RiceDiversity_44K_Genotypes_PLINK/sativas413.ped")
+
+MAP <- read.delim("/Users/malachycampbell/Downloads/ZhaoData/RiceDiversity_44K_Genotypes_PLINK/sativas413.map", sep="\t", header=F)
+
+#no of markers (m), lines (n), and the genotypic data (PED)
+m <- PED$p
+n <- PED$n
+PED <- PED$x
+
+## In BGLR SNPs from PED are coded as 0, 1, 2, 3. SNPs with 2 indicate missing data, 1 are heterozygous, 0 and 3 are homozygous for 1/1 and 2/2 for major allele and minor allele respectively
+PED[PED == 2] <- NA 
+PED[PED == 0] <- 0
+PED[PED == 1] <- 1
+PED[PED == 3] <- 2
+
+#Make the n x m marker matrix
+W <- t(matrix(PED, nrow = m, ncol = n, byrow = T))
+rownames(W) <- FAM$V2
+colnames(W) <- MAP$V2
+```
+
+# Impute missing markers
+```{r impute missing markers with the mean, echo = T}
+
+#calculate the frequency of missing information
+missing.freq <- apply(W, 1, function (x) sum(is.na(x))/length(x))
+
+summary(missing.freq)
+
+#impute missing with mean
+for (j in 1:ncol(W)) {
+  W[, j] <- ifelse(is.na(W[, j]), mean(W[, j], na.rm = TRUE), W[, j])
+}
+```
+
+# Filter based on minor allele frequency
+Here, we'll remove markers with a minor allele frequency (MAF) of less than 5%. First we need to remove individuals that aren't phenotyped, but are genotyped. 
+```{r MAF filter, echo = T}
+W <- W[row.names(W) %in% pheno$NSFTVID ,]
+#Allele frequency
+freq <- colMeans(W) / 2
+
+#If the frequency of 1 is > 0.5 then 1 is the major allele, therefore 1 - the freq of the major allele is MAF
+maf <- ifelse(freq > 0.5, 1-freq, freq)
+maf.index <- which(maf < 0.05)
+W <- W[, -maf.index]
+dim(W)
+```
+
+# Calculate the GRM
+Here, we'll calculate the centered marker matrix, scaled and centered marker matrix, and the genomic relationship matrix.
+```{r Zsc Zc GRM}
+#centered
+Zc <- scale(x = W, center = T, scale = F)
+
+#scaled and centered
+Zsc <- scale(x = W, center = T, scale = T)
+
+#GRM
+GRM <- tcrossprod(Zsc)/ncol(W)
+```
+
+# Genomic prediction
+For genomic prediction we need a population that is used to train a model (known lines with phenotypes and genotypes) and a population where we make our predictions (unknown lines with genotypes, but no phenotypes). Since we don't have two datasets we'll do cross validation. Here, the phenotypic records will be masked for half the observations. The remaining lines with records will be used to train the prediction model and predict the values for the lines with missing phenotypes. The accuracy of this model will be assessed by taking the correlation between the observed phenotypes and the predicted GEBVs for the testing population.
+
+## Creating the cross validation sets
+This code will randomly split the phenotypic data into two equal subsets (two folds). The phenotypic records will be masked for half the observations. In practice, you will want to repeat the CV process many times. 
+```{r CV data, echo = T}
+pheno_train <- pheno
+
+#define the testing and training sets
+set.seed(123)
+train_set <- sample (1:length(pheno$NSFTVID), size = length(pheno$NSFTVID)/2)
+test_set <- setdiff(1:length(pheno$NSFTVID), train_set)
+
+length(train_set)
+length(test_set)
+
+#Mask the phenotypes for the testing set
+pheno_train[test_set ,]$Plant.height <- NA
+```
+
+## Run GBLUP and RRBLUP with training set
+```{r training fit, echo = T}
+library(rrBLUP)
+##rrBLUP
+rrBLUP_train <- mixed.solve(y = pheno_train$Plant.height, Z = Zc)
+rrBLUP_train <- Zc %*% rrBLUP_train$u
+
+length(rrBLUP_train)
+
+##gBLUP
+gBLUP_train <- mixed.solve(y = pheno_train$Plant.height, Z = GRM)
+gBLUP_train <- gBLUP_train$u
+
+length(gBLUP_train)
+```
+
+## Assess predictive ability from rrBLUP and gBLUP approaches
+```{r PA, echo = T}
+gBLUP_test <- gBLUP_train[test_set]
+rrBLUP_test <- rrBLUP_train[test_set]
+
+pheno_test <- pheno[test_set ,]
+
+cor(pheno_test$Plant.height, gBLUP_test)
+
+cor(pheno_test$Plant.height, rrBLUP_test)
+```

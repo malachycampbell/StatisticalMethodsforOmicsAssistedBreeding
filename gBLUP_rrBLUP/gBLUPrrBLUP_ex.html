@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Malachy Campbell" />
+
+<meta name="date" content="2018-10-25" />
+
+<title>Lab: genomic BLUP and ridge regression BLUP</title>
+
+<script src="gBLUPrrBLUP_ex_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="gBLUPrrBLUP_ex_files/bootstrap-3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+<script src="gBLUPrrBLUP_ex_files/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+<script src="gBLUPrrBLUP_ex_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="gBLUPrrBLUP_ex_files/navigation-1.1/tabsets.js"></script>
+<script src="gBLUPrrBLUP_ex_files/navigation-1.1/codefolding.js"></script>
+<link href="gBLUPrrBLUP_ex_files/magnific-popup-1.1.0/magnific-popup.css" rel="stylesheet" />
+<script src="gBLUPrrBLUP_ex_files/magnific-popup-1.1.0/jquery.magnific-popup.min.js"></script>
+<link href="gBLUPrrBLUP_ex_files/clean-0.1/clean.css" rel="stylesheet" />
+<script src="gBLUPrrBLUP_ex_files/clean-0.1/clean.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span. { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+</style>
+<div class="container-fluid main-container">
+  <div class="row">
+     <div class="col-md-10">
+
+
+
+
+<div id="header">
+<h1 class="title">Lab: genomic BLUP and ridge regression BLUP</h1>
+<h4 class="author"><em>Malachy Campbell</em></h4>
+<h4 class="date"><em>10/25/2018</em></h4>
+</div>
+
+<div id="content">
+<div id="genomic-prediction-using-genomic-blup-and-ridge-regression-blup-zhao-data" class="section level1">
+<h1>Genomic prediction using genomic BLUP and ridge regression BLUP: Zhao data</h1>
+<p>The data is for 34 traits for a rice diversity panel evaluated. The raw data can be downloaded here: <a href="http://ricediversity.org/data/sets/44kgwas">Rice Diversity</a>. For convinience, I have also provided the necessary files here <a href="XXXX">GitHub</a>. Below I’ve provided a few examples of how to process some genotypic data in PLINK format, and a chunk of code to do one round of two-fold cross validation. You will have to modify these codes slightly to accomidate you own data</p>
+</div>
+<div id="load-and-clean-up-phentypic-data" class="section level1">
+<h1>Load and clean up phentypic data</h1>
+<p>The phenotypic data has two columns of identifiers, ‘HybID’ and ‘NSFTVID’. For this example I will use plant height as the phenotype and NSFTVID as the identifier.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">#phenotypes</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">pheno &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;~/Downloads/ZhaoData/RiceDiversity_44K_Phenotypes_34traits_PLINK.txt&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">header =</span> T)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">head</span>(pheno[,<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>])</a></code></pre></div>
+<pre><code>       HybID NSFTVID Flowering.time.at.Arkansas Flowering.time.at.Faridpur
+1 081215-A05       1                   75.08333                         64
+2 081215-A06       3                   89.50000                         66
+3 081215-A07       4                   94.50000                         67
+4 081215-A08       5                   87.50000                         70
+5 090414-A09       6                   89.08333                         73
+6 090414-A10       7                  105.00000                         NA
+  Flowering.time.at.Aberdeen FT.ratio.of.Arkansas.Aberdeen
+1                         81                     0.9269547
+2                         83                     1.0783133
+3                         93                     1.0161290
+4                        108                     0.8101852
+5                        101                     0.8820132
+6                        158                     0.6645570
+  FT.ratio.of.Faridpur.Aberdeen Culm.habit Leaf.pubescence
+1                     0.7901235        4.0               1
+2                     0.7951807        7.5               0
+3                     0.7204301        6.0               1
+4                     0.6481481        3.5               1
+5                     0.7227723        6.0               1
+6                            NA        3.0               1
+  Flag.leaf.length
+1         28.37500
+2         39.00833
+3         27.68333
+4         30.41667
+5         36.90833
+6         36.99000</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">pheno &lt;-<span class="st"> </span>pheno[<span class="kw">c</span>(<span class="st">&quot;NSFTVID&quot;</span>, <span class="st">&quot;Plant.height&quot;</span>)]</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#How many have missing data?</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">sum</span>(<span class="kw">is.na</span>(pheno<span class="op">$</span>Plant.height))</a></code></pre></div>
+<pre><code>[1] 30</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">#Remove all lines with out a record for plant height</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">pheno &lt;-<span class="st"> </span>pheno[<span class="op">!</span><span class="kw">is.na</span>(pheno<span class="op">$</span>Plant.height) ,]</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="kw">dim</span>(pheno)</a></code></pre></div>
+<pre><code>[1] 383   2</code></pre>
+</div>
+<div id="read-in-genotype-data-and-reformat-it." class="section level1">
+<h1>Read in genotype data and reformat it.</h1>
+<p><a href="http://zzz.bwh.harvard.edu/plink/">Plink</a> is a software program that is widely used for genetic analyses using SNP data. It is very popular in human genetics, and as a result, their format has become widely used to store genotypic data.</p>
+<p>The files usually consist of a pedigree (.ped) file that has all the genotypic data and some meta data. The first six columns are: Family ID, Individual ID, Paternal ID, Maternal ID, Sex (1=male; 2=female; other=unknown), Phenotype. The following columns are the alleles for each biallelic SNP. Each allele has its own column (no. columns = 2* No SNPs + 6). The family (.fam ) file is just the first six columns of the .ped file. Finally, a map file (.map) is provided that lists the SNP name, chromosome, and position for each SNP</p>
+<p>We’ll use the BGLR package to load SNP data into R.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">library</span>(BGLR)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">#BGLR doesn&#39;t like the tilde shortcut in mac, so you&#39;ll have to provide the full path</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">FAM &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;/Users/malachycampbell/Downloads/ZhaoData/RiceDiversity_44K_Genotypes_PLINK/sativas413.fam&quot;</span>)[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">PED &lt;-<span class="st"> </span><span class="kw">read_ped</span>(<span class="st">&quot;/Users/malachycampbell/Downloads/ZhaoData/RiceDiversity_44K_Genotypes_PLINK/sativas413.ped&quot;</span>)</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">MAP &lt;-<span class="st"> </span><span class="kw">read.delim</span>(<span class="st">&quot;/Users/malachycampbell/Downloads/ZhaoData/RiceDiversity_44K_Genotypes_PLINK/sativas413.map&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">header=</span>F)</a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9"><span class="co">#no of markers (m), lines (n), and the genotypic data (PED)</span></a>
+<a class="sourceLine" id="cb7-10" data-line-number="10">m &lt;-<span class="st"> </span>PED<span class="op">$</span>p</a>
+<a class="sourceLine" id="cb7-11" data-line-number="11">n &lt;-<span class="st"> </span>PED<span class="op">$</span>n</a>
+<a class="sourceLine" id="cb7-12" data-line-number="12">PED &lt;-<span class="st"> </span>PED<span class="op">$</span>x</a>
+<a class="sourceLine" id="cb7-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb7-14" data-line-number="14"><span class="co">## In BGLR SNPs from PED are coded as 0, 1, 2, 3. SNPs with 2 indicate missing data, 1 are heterozygous, 0 and 3 are homozygous for 1/1 and 2/2 for major allele and minor allele respectively</span></a>
+<a class="sourceLine" id="cb7-15" data-line-number="15">PED[PED <span class="op">==</span><span class="st"> </span><span class="dv">2</span>] &lt;-<span class="st"> </span><span class="ot">NA</span> </a>
+<a class="sourceLine" id="cb7-16" data-line-number="16">PED[PED <span class="op">==</span><span class="st"> </span><span class="dv">0</span>] &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb7-17" data-line-number="17">PED[PED <span class="op">==</span><span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb7-18" data-line-number="18">PED[PED <span class="op">==</span><span class="st"> </span><span class="dv">3</span>] &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb7-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb7-20" data-line-number="20"><span class="co">#Make the n x m marker matrix</span></a>
+<a class="sourceLine" id="cb7-21" data-line-number="21">W &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">matrix</span>(PED, <span class="dt">nrow =</span> m, <span class="dt">ncol =</span> n, <span class="dt">byrow =</span> T))</a>
+<a class="sourceLine" id="cb7-22" data-line-number="22"><span class="kw">rownames</span>(W) &lt;-<span class="st"> </span>FAM<span class="op">$</span>V2</a>
+<a class="sourceLine" id="cb7-23" data-line-number="23"><span class="kw">colnames</span>(W) &lt;-<span class="st"> </span>MAP<span class="op">$</span>V2</a></code></pre></div>
+</div>
+<div id="impute-missing-markers" class="section level1">
+<h1>Impute missing markers</h1>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">#calculate the frequency of missing information</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">missing.freq &lt;-<span class="st"> </span><span class="kw">apply</span>(W, <span class="dv">1</span>, <span class="cf">function</span> (x) <span class="kw">sum</span>(<span class="kw">is.na</span>(x))<span class="op">/</span><span class="kw">length</span>(x))</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="kw">summary</span>(missing.freq)</a></code></pre></div>
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.008834 0.020243 0.037750 0.043356 0.052492 0.189182 </code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co">#impute missing with mean</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(W)) {</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">  W[, j] &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(W[, j]), <span class="kw">mean</span>(W[, j], <span class="dt">na.rm =</span> <span class="ot">TRUE</span>), W[, j])</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">}</a></code></pre></div>
+</div>
+<div id="filter-based-on-minor-allele-frequency" class="section level1">
+<h1>Filter based on minor allele frequency</h1>
+<p>Here, we’ll remove markers with a minor allele frequency (MAF) of less than 5%. First we need to remove individuals that aren’t phenotyped, but are genotyped.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">W &lt;-<span class="st"> </span>W[<span class="kw">row.names</span>(W) <span class="op">%in%</span><span class="st"> </span>pheno<span class="op">$</span>NSFTVID ,]</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="co">#Allele frequency</span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">freq &lt;-<span class="st"> </span><span class="kw">colMeans</span>(W) <span class="op">/</span><span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="co">#If the frequency of 1 is &gt; 0.5 then 1 is the major allele, therefore 1 - the freq of the major allele is MAF</span></a>
+<a class="sourceLine" id="cb11-6" data-line-number="6">maf &lt;-<span class="st"> </span><span class="kw">ifelse</span>(freq <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.5</span>, <span class="dv">1</span><span class="op">-</span>freq, freq)</a>
+<a class="sourceLine" id="cb11-7" data-line-number="7">maf.index &lt;-<span class="st"> </span><span class="kw">which</span>(maf <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)</a>
+<a class="sourceLine" id="cb11-8" data-line-number="8">W &lt;-<span class="st"> </span>W[, <span class="op">-</span>maf.index]</a>
+<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="kw">dim</span>(W)</a></code></pre></div>
+<pre><code>[1]   383 33647</code></pre>
+</div>
+<div id="calculate-the-grm" class="section level1">
+<h1>Calculate the GRM</h1>
+<p>Here, we’ll calculate the centered marker matrix, scaled and centered marker matrix, and the genomic relationship matrix.</p>
+</div>
+<div id="genomic-prediction" class="section level1">
+<h1>Genomic prediction</h1>
+<p>For genomic prediction we need a population that is used to train a model (known lines with phenotypes and genotypes) and a population where we make our predictions (unknown lines with genotypes, but no phenotypes). Since we don’t have two datasets we’ll do cross validation. Here, the phenotypic records will be masked for half the observations. The remaining lines with records will be used to train the prediction model and predict the values for the lines with missing phenotypes. The accuracy of this model will be assessed by taking the correlation between the observed phenotypes and the predicted GEBVs for the testing population.</p>
+<div id="creating-the-cross-validation-sets" class="section level2">
+<h2>Creating the cross validation sets</h2>
+<p>This code will randomly split the phenotypic data into two equal subsets (two folds). The phenotypic records will be masked for half the observations. In practice, you will want to repeat the CV process many times.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">pheno_train &lt;-<span class="st"> </span>pheno</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="co">#define the testing and training sets</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="kw">set.seed</span>(<span class="dv">123</span>)</a>
+<a class="sourceLine" id="cb13-5" data-line-number="5">train_set &lt;-<span class="st"> </span><span class="kw">sample</span> (<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(pheno<span class="op">$</span>NSFTVID), <span class="dt">size =</span> <span class="kw">length</span>(pheno<span class="op">$</span>NSFTVID)<span class="op">/</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb13-6" data-line-number="6">test_set &lt;-<span class="st"> </span><span class="kw">setdiff</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(pheno<span class="op">$</span>NSFTVID), train_set)</a>
+<a class="sourceLine" id="cb13-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb13-8" data-line-number="8"><span class="kw">length</span>(train_set)</a></code></pre></div>
+<pre><code>[1] 191</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">length</span>(test_set)</a></code></pre></div>
+<pre><code>[1] 192</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="co">#Mask the phenotypes for the testing set</span></a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">pheno_train[test_set ,]<span class="op">$</span>Plant.height &lt;-<span class="st"> </span><span class="ot">NA</span></a></code></pre></div>
+</div>
+<div id="run-gblup-and-rrblup-with-training-set" class="section level2">
+<h2>Run GBLUP and RRBLUP with training set</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">library</span>(rrBLUP)</a>
+<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="co">##rrBLUP</span></a>
+<a class="sourceLine" id="cb18-3" data-line-number="3">rrBLUP_train &lt;-<span class="st"> </span><span class="kw">mixed.solve</span>(<span class="dt">y =</span> pheno_train<span class="op">$</span>Plant.height, <span class="dt">Z =</span> Zc)</a>
+<a class="sourceLine" id="cb18-4" data-line-number="4">rrBLUP_train &lt;-<span class="st"> </span>Zc <span class="op">%*%</span><span class="st"> </span>rrBLUP_train<span class="op">$</span>u</a>
+<a class="sourceLine" id="cb18-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb18-6" data-line-number="6"><span class="kw">length</span>(rrBLUP_train)</a></code></pre></div>
+<pre><code>[1] 383</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="co">##gBLUP</span></a>
+<a class="sourceLine" id="cb20-2" data-line-number="2">gBLUP_train &lt;-<span class="st"> </span><span class="kw">mixed.solve</span>(<span class="dt">y =</span> pheno_train<span class="op">$</span>Plant.height, <span class="dt">Z =</span> GRM)</a>
+<a class="sourceLine" id="cb20-3" data-line-number="3">gBLUP_train &lt;-<span class="st"> </span>gBLUP_train<span class="op">$</span>u</a>
+<a class="sourceLine" id="cb20-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb20-5" data-line-number="5"><span class="kw">length</span>(gBLUP_train)</a></code></pre></div>
+<pre><code>[1] 383</code></pre>
+</div>
+<div id="assess-predictive-ability-from-rrblup-and-gblup-approaches" class="section level2">
+<h2>Assess predictive ability from rrBLUP and gBLUP approaches</h2>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">gBLUP_test &lt;-<span class="st"> </span>gBLUP_train[test_set]</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">rrBLUP_test &lt;-<span class="st"> </span>rrBLUP_train[test_set]</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">pheno_test &lt;-<span class="st"> </span>pheno[test_set ,]</a>
+<a class="sourceLine" id="cb22-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb22-6" data-line-number="6"><span class="kw">cor</span>(pheno_test<span class="op">$</span>Plant.height, gBLUP_test)</a></code></pre></div>
+<pre><code>[1] 0.5308274</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw">cor</span>(pheno_test<span class="op">$</span>Plant.height, rrBLUP_test)</a></code></pre></div>
+<pre><code>[1] 0.7116921</code></pre>
+</div>
+</div>
+</div>
+
+
+    </div>
+    <div class="col-md-2">
+            <div id="toc">
+      	<button type="button" class="close">×</button>
+        <ul>
+        <li><a href="#genomic-prediction-using-genomic-blup-and-ridge-regression-blup-zhao-data">Genomic prediction using genomic BLUP and ridge regression BLUP: Zhao data</a></li>
+        <li><a href="#load-and-clean-up-phentypic-data">Load and clean up phentypic data</a></li>
+        <li><a href="#read-in-genotype-data-and-reformat-it.">Read in genotype data and reformat it.</a></li>
+        <li><a href="#impute-missing-markers">Impute missing markers</a></li>
+        <li><a href="#filter-based-on-minor-allele-frequency">Filter based on minor allele frequency</a></li>
+        <li><a href="#calculate-the-grm">Calculate the GRM</a></li>
+        <li><a href="#genomic-prediction">Genomic prediction</a><ul>
+        <li><a href="#creating-the-cross-validation-sets">Creating the cross validation sets</a></li>
+        <li><a href="#run-gblup-and-rrblup-with-training-set">Run GBLUP and RRBLUP with training set</a></li>
+        <li><a href="#assess-predictive-ability-from-rrblup-and-gblup-approaches">Assess predictive ability from rrBLUP and gBLUP approaches</a></li>
+        </ul></li>
+        </ul>
+      </div>
+          </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function () {
+
+  // add bootstrap table styles to pandoc tables
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+
+});
+</script>
+
+<script>
+$(document).ready(function () {
+ 	 	$('#content img')
+ 	  .addClass("image-thumb");
+      $('#content img')
+ 	  .addClass("image-lb");
+  $('#content').magnificPopup({
+	      type:'image',
+	      closeOnContentClick: false,
+	      closeBtnInside: false,
+	      delegate: 'img',
+	      gallery: {enabled: false },
+	      image: {
+	        verticalFit: true,
+          titleSrc: 'alt'
+	      }
+ 	    });
+ 	});
+</script>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
