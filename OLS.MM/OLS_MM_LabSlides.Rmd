@@ -119,6 +119,7 @@ $$h^2 = \frac{ \sigma_{RIL}^2 }{ \sigma_{RIL}^2 + \frac{\sigma_{RIL \times LOC}^
 $\sigma_e^2 = MS(Error)$
 
 # Estimating heritability from ANOVA/OLS
+\footnotesize
 ```{r H2 for maize height, echo = T}
 anova.res <- as.data.frame(anova(mod1))
 
@@ -142,6 +143,7 @@ print(H2.OLS)
   - '(1|location/rep)' is the random effect of rep nested within location
   - '(1|location:RIL)' is the random effect of location x RIL interaction
 
+\footnotesize
 ```{r MM BLUEs for maize height, echo = T}
 library(lme4)
 mod2 <- lmer(height ~ RIL + (1|location/rep) + (1|location:RIL), maize)
@@ -153,6 +155,7 @@ summary(mod2)$coefficients[1,1] + summary(mod2)$coefficients[2,1]
 # Estimating heritability with a mixed model in lme4
 - Here, all terms with the exception of $\mu$ will be considered random. 
 
+\footnotesize
 ```{r MM H2 maize height, echo = T}
 mod3 <- lmer(height ~ 1 + (1|RIL) + 
                (1|location/rep) + 
@@ -176,8 +179,10 @@ print(H2.MM)
 
 - In lme4:
 
+\footnotesize
 ```{r MM blups maize height, echo = T}
-mod3 <- lmer(height ~ 1 + (1|RIL) + (1|location/rep) + (1|location:RIL), maize)
+mod3 <- lmer(height ~ 1 + (1|RIL) + (1|location/rep) 
+             + (1|location:RIL), maize)
 
 #extract the blups for RILs
 blups_m3 <- ranef(mod3)$RIL
