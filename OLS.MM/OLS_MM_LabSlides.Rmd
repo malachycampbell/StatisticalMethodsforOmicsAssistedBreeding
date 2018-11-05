@@ -23,7 +23,7 @@ Learning objectives:
 
   1. Brief overview of ordinary least squares (OLS) and mixed models (MM)
 
-  2. Estimate genetic values and $H^2$ using OLS and MM. 
+  2. Estimate genetic values and $h^2$ using OLS and MM. 
 
   3. Learn to deal with unbalanced data
     
@@ -111,9 +111,9 @@ print(RIL_11)
 # Estimating heritability from ANOVA/OLS
 - Since the design is balanced we can estimate $H^2$ using ANOVA
 
-$$H^2 = \frac{ \sigma_{RIL}^2 }{ \sigma_{RIL}^2 + \sigma_{RIL \times LOC}^2 + \sigma_e^2 }$$.
+$$h^2 = \frac{ \sigma_{RIL}^2 }{ \sigma_{RIL}^2 + \frac{\sigma_{RIL \times LOC}^2}{n_l} + \frac{\sigma_e^2}{n_r n_l} }$$.
 
--  From the ANOVA table:
+-  EMS from the ANOVA table:
 
     $\sigma_{RIL \times LOC}^2 = \frac{MS(RIL \times LOC) - MS(Error)}{n_r}$, $\sigma_{RIL}^2 = \frac{MS(RIL) - MS(RIL \times LOC)}{n_r n_l}$, and  
 $\sigma_e^2 = MS(Error)$
@@ -126,7 +126,7 @@ sigma_err <- anova.res[5,3]
 sigma_G.E <- (anova.res[3,3] - sigma_err) / 2  
 sigma_G <- (anova.res[2,3] - anova.res[3,3]) / 8
 
-H2.OLS <- sigma_G / (sigma_G + sigma_G.E + sigma_err)
+H2.OLS <- sigma_G / (sigma_G + sigma_G.E/4 + sigma_err/8)
 print(H2.OLS)
 ```
 
@@ -139,15 +139,18 @@ print(H2.OLS)
 
 # Obtaining genetic values (BLUEs) with a mixed model in lme4
 - Random terms are specified by '(1|some term)'.
+  - '(1|location/rep)' is the random effect of rep nested within location
+  - '(1|location:RIL)' is the random effect of location x RIL interaction
 
 ```{r MM BLUEs for maize height, echo = T}
+library(lme4)
 mod2 <- lmer(height ~ RIL + (1|location/rep) + (1|location:RIL), maize)
 
 #List the estimates for the fixed effects
 summary(mod2)$coefficients[1,1] + summary(mod2)$coefficients[2,1]
 ```
 
-# Estimating heritability with a mixed modelin lme4
+# Estimating heritability with a mixed model in lme4
 - Here, all terms with the exception of $\mu$ will be considered random. 
 
 ```{r MM H2 maize height, echo = T}
@@ -163,7 +166,7 @@ sigma_G.E.MM <- MM.varcomps[1,4]
 sigma_G.MM <- MM.varcomps[2,4]
 
 H2.MM <- sigma_G.MM / 
-  (sigma_G.MM + sigma_G.E.MM + sigma_err.MM)
+  (sigma_G.MM + sigma_G.E.MM/4 + sigma_err.MM/8)
 
 print(H2.MM)
 ```
