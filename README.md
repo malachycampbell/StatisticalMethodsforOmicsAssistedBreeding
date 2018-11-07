@@ -67,7 +67,7 @@ Slides for short course on 'omics assisted breeding methods.
 **Day 4**
   - 9:00-12:00 Multi-trait methods for GWAS and GP (HI, DJ, GM)
   - 12:00-13:00 Lunch 
-  - 13:00-15:00 Bayesian network (MC, GM)
+  - 13:00-15:00 Bayesian network (MC, GM) [[PDF Slides]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/BN/BN.pdf)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/BN/BN.Rmd)
   - 15:00-15:10 Break
   - 15:10-17:00 Experimental design + Optimal designs (ET)
 
