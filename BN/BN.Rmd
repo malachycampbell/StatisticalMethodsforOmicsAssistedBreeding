@@ -1,0 +1,121 @@
+---
+title: "Bayesian Networks"
+author: "Malachy Campbell"
+date: "11/5/2018"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction
+
+- Goal: Model causation (or more appropriatly probabilistic dependance) between correlated variables/ traits
+
+- Plant breeding example: Given a dataset of many (10+) agronomic traits (plant height, nitrogen use efficiency, grain protein, grain carbohydrates/starch, leaf area index, radiation use effiency, yeild), how does selection for one (e.g. grain protein) impact another (e.g. grain yeild)?
+
+## Graphical model terminology
+- A graph ($G = (V,A)$) is composed of nodes ($V$) and vertices/arcs ($A$)
+  - Nodes ($u$, $v$): variables or traits
+  - Arcs ($a = (u, v)$: describe the relationships between nodes $u$ and $v$
+      - If $u$ and $v$ are ordered then the arc is directed, $u$ and $v$ unordered then the arc is undirected.
+- Undirected graphs: no ordering between nodes; Directed graphs: all arcs are ordered; Partially directed graphs: some arcs are ordered
+
+- Paths: sequences of arcs connecting two nodes; passes through each arc only once and all arcs follow the same direction
+
+- Root and leaf nodes are the base and terminal nodes, respectively. No nodes are incoming for roots and no arcs leave leaf nodes.
+
+PICTURE OF NETWORKS
+
+## Bayesian background
+- Chain rule: Joint probability distribution of $i$ random variables ($x_1, x_2, x_3, x_4$) is $\textrm{P}(x_1, x_2, x_3, x_4) = \textrm{P}(x_4 | x_1, x_2, x_3) \textrm{P}(x_3 | x_1, x_2) \textrm{P}(x_2 | x_1) \textrm{P}(x_1)$
+
+<!---
+Calculate joint probability using conditional probabilities
+--->
+
+- If we have no knowledge of any variables then variables are independent if  $\textrm{P}(x_1, x_2, x_3, x_4) = \textrm{P}(x_4) \textrm{P}(x_3) \textrm{P}(x_2) \textrm{P}(x_1)$
+    
+
+- If we have knowledge of some variable ($x_4$) then variables are independent if  $\textrm{P}(x_1, x_2, x_3 | x_4) = \textrm{P}(x_3|x_4) \textrm{P}(x_2|x_4) \textrm{P}(x_1|x_4)$
+
+$$\textrm{P}(x_1, x_2, x_3 | x_4) = \frac{\textrm{P}(x_3|x_4) \textrm{P}(x_2|x_4) \textrm{P}(x_1|x_4)  \textrm{P}(x_4)}{\textrm{P}(x_4)}$$
+
+## Bayesian Networks (BN)
+- BN are a class of graphical models that represent the probabilistic dependencies between a set of random variables as a directed acyclic graph (no loops!). We can scale these concepts to a graphical model.
+
+- For a divergent structure (A) the joint distribution is $\textrm{P}(X1, X2, X3) = \textrm{P}(X2|X1) \textrm{P}(X3|X1) \textrm{P}(X1)$; serial structure (B) the joint distribution is $\textrm{P}(X1, X2, X3) = \textrm{P}(X3|X2) \textrm{P}(X2|X1) \textrm{P}(X1)$; convergent structure (C) the joint distribution is $\textrm{P}(X1, X2, X3) = \textrm{P}(X2|X1,X3) \textrm{P}(X1) \textrm{P}(X3)$
+
+\begin{center}
+
+\includegraphics[height=75px]{DAGs}
+
+\end{center}
+
+## Bayesian Networks (BN)
+- **Example 1**: If we have no information for the divergent structure, are X2 and X3 independent?
+
+\begin{center}
+
+\includegraphics[height=75px]{divergent}
+
+\end{center}
+
+$$\textrm{P}(X2, X3) = \sum_{X3} \textrm{P}(X2|X1) \textrm{P}(X3|X1) \textrm{P}(X1)$$
+<!---
+Marginalize the joint distribution with respect to X1
+--->
+
+## Bayesian Networks (BN)
+- **Example 2**: If we have information on X1 for the divergent structure, are X2 and X3 independent?
+
+\begin{center}
+
+\includegraphics[height=75px]{divergent_inf}
+
+\end{center}
+
+$$\textrm{P}(X2, X3|X1) = \textrm{P}(X2|X1) \textrm{P}(X3|X1)$$
+
+## Bayesian Networks (BN)
+- **Example 3**:
+    
+    1. If we don't have information on X2 for the serial structure (A), are X1 and X3 independent?
+    $\textrm{P}(X1, X3) = \sum_{X2} \textrm{P}(X3|X2) \textrm{P}(X2|X1) \textrm{P}(X1)$
+    
+    2. If we do have information on X2 for the serial structure (B), are X1 and X3 independent?
+    $\textrm{P}(X1, X3|X2) = \textrm{P}(X3|X2) \textrm{P}(X1|X2)$
+    
+\begin{center}
+
+\includegraphics[height=75px]{serial}
+
+\end{center}
+
+
+## Bayesian Networks (BN)
+- **Example 4**:
+    
+    1. If we don't have information on X1 for the convergent structure (A), are X2 and X3 independent?
+    $\textrm{P}(X2, X3) = \textrm{P}(X2) \textrm{P}(X3)$
+    
+    2. If we do have information on X1 for the convergent structure (B), are X2 and X3 independent?
+    $\textrm{P}(X1, X3|X2) = \frac{\textrm{P}(X3) \textrm{P}(X3) \textrm{P}(X1|X2,X3) }{\textrm{P}(X1)}$
+    
+\begin{center}
+
+\includegraphics[height=75px]{convergent}
+
+\end{center}
+
+## Rules for $direct$-separation
+- If we scale this up, each node can be considered a subset of nodes in a DAG
+
+- Consider only the cases where we have information. Given some information for a group of nodes (**B**), the two subsets of nodes **A** and **C** are conditionally independant if there is a node $w$ that has (1) converging arrows and $w$ nor any of its descendants are part of **B** (e.g. does not carry information), or if $w$ does not have converging arrows and is a part of **B**
+
+<!---
+(1) is demonstrated by example 4B and (2) is demonstrated by example 3B
+--->
+
+- If these conditions are satisfied we can say that **B** $direct$-separates ($d$-separates) **A** from **C**
