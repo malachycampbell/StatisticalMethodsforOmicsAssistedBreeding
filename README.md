@@ -26,6 +26,7 @@ Slides for short course on 'omics assisted breeding methods.
 
 **Day 1**
   - 9:00-10:10: Basic statistical computing in R (MC) - R Markdown
+     - Intro [[PDF Slides]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/Intro.pdf)
      - Part 1 [[PDF Slides]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/IntroToR1.pdf)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/IntroToR1.Rmd)
      - Part 2 [[PDF Slides]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/IntroToR2.pdf)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/IntroToR2.Rmd)
      - Part 3 [[HTML]](https://htmlpreview.github.io/?https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/IntroToR3.html)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/IntroToR3.Rmd)
