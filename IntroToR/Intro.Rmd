@@ -1,0 +1,48 @@
+---
+title: "Very basic statistical computing in R"
+author: "Malachy Campbell"
+date: "11/9/2018"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## About me
+- B.S. - Rutgers University - Plant Science
+
+- PhD - University of Nebraksa Lincoln - Plant Breeding and Genetics
+
+\begin{center}
+
+\includegraphics[height=120px]{Map}
+
+\end{center}
+
+## About me
+
+- I have a background in plant physiology, molecular biology and genetics.
+
+\begin{center}
+
+\includegraphics[height=100px]{HTP}
+
+\end{center}
+
+## About me
+
+- Joined Gota Morota's group in 2017 to develop models for genomic prediction and inference of longitudinal traits
+
+\begin{columns}
+    \begin{column}{0.48\textwidth}
+       \begin{center}
+        \includegraphics[height=100px]{Campbell_2018_PlantDirect}
+        \end{center}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+        \begin{center}
+        \includegraphics[height=85px]{man}
+        \end{center}
+    \end{column}
+\end{columns}

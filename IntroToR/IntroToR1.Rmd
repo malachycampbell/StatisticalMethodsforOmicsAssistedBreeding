@@ -9,6 +9,30 @@ output: beamer_presentation
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
+## About me
+- B.S. - Rutgers University - Plant Science
+
+- PhD - University of Nebraksa Lincoln - Plant Breeding and Genetics
+
+\begin{center}
+
+\includegraphics[height=255px]{Map}
+
+\end{center}
+
+## About me
+
+- I have a background in plant physiology, molecular biology and genetics.
+
+\begin{center}
+
+\includegraphics[height=100px]{HTP}
+
+\end{center}
+
+- Joined Gota Morota's group in 2017 to develop models for genomic prediction and inference of longitudinal traits
+
+
 ## Outline
 - Very basics of R
     - Types of objects and classes
@@ -121,7 +145,7 @@ nestedList
 
 \tiny
 ```{r input and output, echo = T}
-setwd("/Users/malachycampbell/Documents/Dropbox/Work/Presentations/Japan/IntroToR/")
+setwd("/Users/malachycampbell/Documents/Dropbox/Work/Presentations/Japan/IntroToR/IntroToR/")
 #Data <- read.csv("/Users/malachycampbell/Documents/Dropbox/Work/Presentations/Japan/IntroToR/SeriousData.csv")
 Data <- read.csv("SeriousData.csv")
 head(Data)
