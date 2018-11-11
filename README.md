@@ -26,6 +26,10 @@ Slides for short course on 'omics assisted breeding methods.
 
 **Day 1**
   - 9:00-10:10: Basic statistical computing in R (MC) - R Markdown
+     - Part 1 [[PDF Slides]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/IntroToR1.pdf)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/IntroToR1.Rmd)
+     - Part 2 [[PDF Slides]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/IntroToR2.pdf)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/IntroToR2.Rmd)
+     - Part 3 [[HTML]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/IntroToR3.html)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/IntroToR3.Rmd)
+     - Data [[SillyData]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/SillyData.csv)[[SeriousData]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/SeriousData.csv)[[PSA]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/IntroToR/PSA.cleaned.csv)
   - 10:10-10:20: Break
   - 10:20-12:00: Data visualization in R (ET) - ggplot2 + desplot
   - 12:00-13:00: Lunch 
