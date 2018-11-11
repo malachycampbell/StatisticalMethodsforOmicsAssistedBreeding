@@ -38,6 +38,8 @@ Learning objectives:
   
     - We'll use height as the response variable.
 
+- See Isik and 
+
 # Loading the data.
 
 \footnotesize
@@ -72,7 +74,7 @@ $$y_{ijk} = \mu + L_i + Rep(L)_{ij} + G_k + GL_{ik} + e_{ijk}$$
 maize$rep <- as.factor(maize$rep)
 mod1 <- lm(height ~ location*RIL + rep:location, data = maize)
 
-#anova(mod1)
+anova(mod1)
 ```
 
 # Obtaining genetic values with OLS
@@ -109,13 +111,23 @@ print(RIL_11)
 ```
 
 # Estimating heritability from ANOVA/OLS
+
+$$h^2 = \frac{ \sigma_{RIL}^2 }{ \sigma_{RIL}^2 + \frac{\sigma_{RIL \times LOC}^2}{n_l} + \frac{\sigma_e^2}{n_r n_l} }$$
+
+- EMS from ANOVA
+
+  - Location: $\sigma^2_e + n_b \sigma^2_{GL} + n_g \sigma^2_B(L) + n_b n_g \sigma^2_L$
+  - B(L): $\sigma^2_e + n_g \sigma^2_B(L)$
+  - RIL: $\sigma^2_e + n_b \sigma^2_{GL} + n_g \sigma^2_B(L)$
+  - RIL x Loc: $\sigma^2_e + n_b \sigma^2_{GL}$
+
+# Estimating heritability from ANOVA/OLS
+
 - Since the design is balanced we can estimate $H^2$ using ANOVA
 
-$$h^2 = \frac{ \sigma_{RIL}^2 }{ \sigma_{RIL}^2 + \frac{\sigma_{RIL \times LOC}^2}{n_l} + \frac{\sigma_e^2}{n_r n_l} }$$.
+$$h^2 = \frac{ \sigma_{RIL}^2 }{ \sigma_{RIL}^2 + \frac{\sigma_{RIL \times LOC}^2}{n_l} + \frac{\sigma_e^2}{n_r n_l} }$$
 
--  EMS from the ANOVA table:
-
-    $\sigma_{RIL \times LOC}^2 = \frac{MS(RIL \times LOC) - MS(Error)}{n_r}$, $\sigma_{RIL}^2 = \frac{MS(RIL) - MS(RIL \times LOC)}{n_r n_l}$, and  
+- $\sigma_{RIL \times LOC}^2 = \frac{MS(RIL \times LOC) - MS(Error)}{n_r}$, $\sigma_{RIL}^2 = \frac{MS(RIL) - MS(RIL \times LOC)}{n_r n_l}$, and  
 $\sigma_e^2 = MS(Error)$
 
 # Estimating heritability from ANOVA/OLS
