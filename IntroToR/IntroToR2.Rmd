@@ -1,0 +1,284 @@
+---
+title: "Basic statistical computing in R"
+author: "Malachy Campbell"
+date: "11/9/2018"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(plyr)
+setwd("/Users/malachycampbell/Documents/Dropbox/Work/Presentations/Japan/IntroToR")
+```
+
+## Outline
+- Reshaping data 
+    - Manipulating datasets with tidyr
+    - Applying functions over datasets (for loops, apply and plyr)
+    
+- Data visualization
+    - Base graphics and ggplot2
+
+- Presenting data
+    - Reproducible reports and presentations in Rmarkdown
+
+
+## Reshaping data
+- We often want to go between 'long' and 'wide' formats
+
+- Long:
+
+\tiny
+```{r long example}
+LongDF <- data.frame(Line = c( rep("Line1", 6), rep("Line2", 6)),
+                     Rep = rep(c(1:3), 4), 
+                     Location = rep(c(rep("Home",3), rep("Away", 3)), 2),
+                     Value = NA)
+LongDF$Value[c(1:3,7:9)] <- rnorm(6, 50, 10)
+LongDF$Value[c(4:6,10:12)] <- rnorm(6, 100, 10)
+
+head(LongDF)
+```
+
+- Wide:
+
+\tiny
+```{r wide example}
+WideDF <- spread(LongDF, key = Location, value = Value)
+head(WideDF)
+```
+
+## Reshaping data: 'spread' and 'gather'
+
+- Rice data set (Zhao et al 2011): 34 traits for 413 rice accessions (not all have phenotypes)
+    - 'Wide' format: traits listed as different columns
+    - We'll use flowering time at three locations as an example 
+
+\tiny
+```{r get rice data, echo = T}
+Rice <- read.table(url("http://ricediversity.org/data/sets/44kgwas/RiceDiversity_44K_Phenotypes_34traits_PLINK.txt"),
+                       sep = "\t", header = T)[1:5]
+dim(Rice)
+```
+
+## Reshaping data: 'spread' and 'gather' functions
+
+- Convert it to long format using the gather function
+
+    - gather(data, name for combined column, name for value column, names of columns to be combined)
+    
+\tiny
+```{r gather rice data, echo = T}
+Rice_long <- gather(Rice, Location, Value, 
+                    Flowering.time.at.Arkansas:Flowering.time.at.Aberdeen, 
+                    factor_key = T)
+dim(Rice_long)
+dim(Rice)
+
+#Give the locations a shorter name
+Rice_long$Location <- sub("Flowering.time.at.", "", Rice_long$Location)
+```
+
+## Reshaping data: 'spread' and 'gather' functions
+
+- Convert long to wide format using the spread function
+
+    - spread(data, name of the column to be expanded, name for value column)
+    
+\tiny
+```{r spread rice data, echo = T}
+Rice_wide <- spread(data = Rice_long, key = Location, value = Value)
+dim(Rice_wide)
+dim(Rice)
+```
+
+## Applying functions over data
+
+- In the simplest case we want to get a summary for each trait (flowering time at each location) or for each line
+
+    - If the data is in wide format just take the column means
+
+- Mean flowering time at each location:
+
+\tiny
+```{r wide colmeans, echo = T}
+#Mean of each trait
+#colMeans
+colMeans(Rice_wide[3:5], na.rm = T)
+
+#Alternatively use apply and apply the function 
+#over columns (indicated by 2)
+apply(Rice_wide[3:5], 2, mean, na.rm = T)
+```
+
+## Applying functions over data
+- Mean flowering time for each line:
+
+\tiny
+```{r wide rowmeans, echo = T}
+#Mean for each line
+head(rowMeans(Rice_wide[3:5], na.rm = T))
+
+#Alternatively use apply and apply the function 
+#over rows (indicated by 1)
+head(apply(Rice_wide[3:5], 1, mean, na.rm = T))
+```
+
+## Applying functions over data
+- Suppose we measure a trait at multiple time points and the day of measurement is stored in one column. What can we do if we want to take to take the mean at each time point for each line?
+
+\tiny
+```{r longit, echo = T}
+Longit <- read.csv("PSA.cleaned.csv", header = T)
+head(Longit)
+Longit$DayOfImaging <- as.factor(Longit$DayOfImaging)
+```
+
+
+## Applying functions over data: for loops
+- For each day, subset the data frame, transform it to the wide format and take the mean
+
+\tiny
+```{r longit for, echo = T}
+ResList <- list()
+for (i in 1:length(unique(Longit$DayOfImaging))){
+  #subset
+  tmpdata <- Longit[Longit$DayOfImaging 
+                    %in% unique(Longit$DayOfImaging)[i] ,]
+  tmpdata <- spread(tmpdata, key = NSFTV.ID, value = PSA)
+  ResList[[i]] <- colMeans(tmpdata[4:length(tmpdata)], na.rm = T)
+}
+head(ResList[[20]])
+```
+
+## Applying functions over data: plyr
+
+- Sometimes for loops are necessary, but try to use an alternative if it exists
+
+- ddply: apply some function to subsets of dataframe and combine the results into a nice dataframe
+
+\tiny
+```{r longit plyr, echo = T}
+#.(NSFTV.ID, DayOfImaging) these are the columns that we will subset on
+Longit_means <- ddply(Longit, .(NSFTV.ID, DayOfImaging), summarise, MeanPSA = mean(PSA, na.rm = T))
+
+head(Longit_means)
+```
+
+- Also check out other plyr functions: dlply, ldply, etc.
+    
+
+## Plotting with the R base graphics
+
+\tiny
+```{r boxplots base graphics, echo = T, eval = F}
+pdf("Base_plot.pdf",  h=3, w=6, useDingbats = F,
+    pointsize = 10)
+par(mar=c(3,4,2,0.5), mgp=c(1.8,0.5,0), 
+    mfrow=c(1,2), cex.lab = 0.75, cex.axis = 0.75)
+#Formula, data, color, etc
+boxplot(MeanPSA ~ DayOfImaging, data = Longit_means, 
+        col = colors()[1:20], ylab = "PSA", 
+        xlab = "Days of Imaging", cex = 0.3)
+
+mtext("A", line = 1, side = 3, adj = -0.25)
+
+tmp.df <- spread(Longit_means[Longit_means$DayOfImaging %in% c(19,20) ,], 
+                 DayOfImaging, MeanPSA)
+
+plot(tmp.df$`19`, tmp.df$`20`, pch = 21, cex = 0.3, 
+     ylab = "PSA (D19)", xlab = "PSA (D20)")
+mtext("B", line = 1, side = 3, adj = -0.25) 
+dev.off()
+```
+
+## Plotting with the R base graphics
+
+\tiny
+
+\begin{center}
+
+\includegraphics[height=255px]{Base_plot}
+
+\end{center}
+
+
+## Plotting with ggplot
+- Aesthetics: specify the variables in data sets
+
+  - Position, color, shape of points; height of a bar
+
+- Geoms: Specify the type of graph
+ 
+  - Scatter plot (geom_point), bar (geom_bar), line (geom_line), heatmap (geom_tile)
+
+- Others: statistics, themes, legend, labels, etc.
+
+## Plotting with ggplot
+
+\tiny
+```{r ggplot, echo = T, fig.height=2, fig.width=2.2}
+tmp.df <- spread(Longit_means[Longit_means$DayOfImaging %in% 
+                                c(19,20) ,], 
+                 DayOfImaging, MeanPSA)
+
+NicePlot <- ggplot(tmp.df) + 
+  geom_point(aes(x=`19`, y=`20`), pch = 21, size = 0.5) +
+  ylab("PSA (D20)") +
+  xlab("PSA (D19)") 
+
+NicePlot
+```
+</font>
+
+## Plotting with ggplot
+\tiny
+```{r ggplot2, echo = T, fig.height=2, fig.width=2.2}
+NicePlot <- NicePlot + theme_bw() +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          text = element_text(size = 6)) +
+          labs(title = "A Graph",
+               caption = "A caption")
+
+NicePlot
+```
+
+## Generating reproducable reports with R markdown
+
+- Markdown: Markdown is a language (?) for creating HTML, PDF, and MS Word
+
+- Using the Knitr package reports can be made within R studio
+
+- 'rmdformats' package has several pre-made templates
+  
+    - Picture of 'rmdformats'
+    
+    
+## Generating reproducable reports with R markdown
+
+- From Rstudio: File -> New File -> Rmarkdown...
+
+
+\begin{center}
+
+\includegraphics[height=255px]{Rmd_open}
+
+\end{center}
+
+
+## Generating reproducable reports with R markdown
+
+- Demo
+
+
+## Presentations with R markdown
+
+- From Rstudio: File -> New File -> Rmarkdown...
+
+\begin{center}
+
+\includegraphics[height=255px]{Rmd_slides}
+
+\end{center}
