@@ -1,7 +1,7 @@
 ---
-title: "Lab: genomic BLUP and ridge regression BLUP"
+title: "Estimating genomic breeding values using genomic BLUP and ridge regression BLUP"
 author: "Malachy Campbell"
-date: "10/16/2018"
+date: "11/13/2018"
 header-includes:
    - \usepackage{bbm}
    - \usepackage{amsmath}
@@ -16,24 +16,63 @@ knitr::opts_chunk$set(echo = FALSE, size = "footnotesize")
 library(rrBLUP)
 ```
 
+# Intro
 
-# Learning Objectives
+$$ \mathbf{y} = \mathbf{g} + \epsilon $$
+- What is $\textbf{g}$?
 
-1. Calculate a GRM
-	
-2. Run gBLUP
-	
-3. Run rrBLUP
-	
-4. Participants will be understand the equivalency of gBLUP and rrBLUP
+\begin{table}
+\begin{tabular}{l | c | c | c }
+Plant ID & y & g & e\\
+\hline \hline
+1 & 10 & 5 & 5 \\ 
+2 & 7 & 6 & 1 \\
+3 & 12 & 2 & 10 \\
+\end{tabular}
+\end{table}
 
-# Outline
+<!--- Which line is best? If we select only on phenotypic data, which would you choose? Phenotypic selection is unreliable. The goal is to predict g with some reliable accuracy. Like I talked about earlier, BLUP was traditionally done with pedigree data, but if we don't have pedigree data, we need to use the next best alternative - markers
+--->
 
-- Demonstration with Spindel data
+# Intro
 
-- On your own (1) gBLUP and rrBLUP Zhao data set, (2) cross validation
+- Recall that $\mathbf{g}$ is the cumulative additive genetic effect 
 
-# Spindel data set
+$$ \mathbf{y} = 1 \mu + \sum_k x_k \beta + e $$
+$\mathbf{W}$ is a centered $n \times m$ marker matrix, $\mathbf{a}$ is vector of SNP effects 
+
+<!--- 
+Next logical step would be if we want to predict g, we can just predict all the SNP effects
+--->
+
+
+# Ridge regression BLUP
+
+$$ \mathbf{y} = 1 \mu + \sum_k x_k \beta + \epsilon $$
+
+- Proposed before the 'big data' trend by Meuwissen et al (2001)
+
+- $\hat{\beta} = \mathbf{X'}(\mathbf{XX'} + \lambda \mathbf{I})^{-1} \mathbf{y}$
+
+    - $\lambda = \frac{\sigma^2_e}{\sigma^2_\beta}$
+
+# Genomic BLUP
+
+$$ \mathbf{y} = 1 \mu + \mathbf{Zu} + e $$
+
+- $\hat{u} = \left[ \mathbf{I} + \mathbf{G}^{-1} \frac{\sigma^2_e}{\sigma^2_u} \right] \mathbf{y}$
+
+- How do these methods differ? How will the GEBVs differ?
+
+# Equivalence
+
+- For gBLUP the $Var(y) =  \mathbf{ZGZ'}\sigma^2_u + \mathbf{I}\sigma^2_e$
+
+- For rrBLUP the $Var(y) =  \mathbf{XX'}\sigma^2_\beta + \mathbf{I}\sigma^2_e$ 
+    
+    - What does $\mathbf{XX'}$ represent?
+
+# Demonstration with Spindel data
 
 - 299 elite rice lines from IRRI 
 
@@ -46,10 +85,11 @@ library(rrBLUP)
     - **grain yield (GY)**
     
     - measured in dry and wet seasons
-    
+
 ![](spindel.png){width=225px}
 
 # Loading data
+
 \footnotesize
 ```{r load spindel data, echo = T}
 ##Clear all objects
@@ -85,7 +125,6 @@ dim(GRM)
 ```{r gBLUP via rrBLUP, echo = T}
 library(rrBLUP)
 
-#MM with rrBLUP regression on G
 gBLUP <- mixed.solve(y = pheno$YLD, K = GRM)
 names(gBLUP)
 
@@ -97,25 +136,26 @@ length(gBLUP$u)
 \footnotesize
 ```{r rrBLUP via rrBLUP, echo = T}
 library(rrBLUP)
-Zc <- scale(x = geno, center = T, scale = F)
 
-#MM with rrBLUP regression on markers
-rrBLUP <- mixed.solve(y = pheno$YLD, Z = Zc)
+rrBLUP <- mixed.solve(y = pheno$YLD, Z = Zsc)
 names(rrBLUP)
 
 length(rrBLUP$u)
 ```
 
+- Why are the sizes `rrBLUP$u` and `gBLUP$u` different?
+
+- How can we make the two comparable?
+
 # Are rrBLUP and gBLUP equivalent?
 
 - Recall $$\hat g = W \hat a$$ 
 
-- Thus, here we'll leverage that to calculate the breeding values (GEBVs) from the predicted marker effects
 
 \footnotesize
 ```{r rrBLUP v gBLUP, echo = T}
 #calculate GEBVs from predicted marker effects
-gBLUP_rr <- Zc %*% rrBLUP$u
+gBLUP_rr <- Zsc %*% rrBLUP$u
 
 gBLUP_YLD <- gBLUP$u + as.numeric(gBLUP$beta)
 gBLUP_rr_YLD <- gBLUP_rr + as.numeric(rrBLUP$beta)
@@ -135,19 +175,63 @@ text(x = 4400, y = 5200, paste0("r = ",
   round(cor(gBLUP_YLD, gBLUP_rr_YLD),2)), col = "red", cex = 0.75)
 ```
 
-# On your own
-- Download the Zhao data set and repeat the analysis above
+# How accurate are our predictions?
 
-    - https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/gBLUP_rrBLUP/ZhaoData.zip
+- How can we estimate how accurate our predicted genomic breeding values are?
 
-    - You will have to (1) recode the SNP data, (2) partition and mask the data for cross validation
+# How accurate are our predictions?
 
-        - See the examples in the file 'gBLUP_RRBLUP_ex.Rmd'
-        
+- How can we estimate how accurate our predicted genomic breeding values are?
+
+    - Compare predicted and observed breeding values for a new population
+
+    - Partition dataset and use one for training and one for prediction
+
+# Two fold cross validation
+
+- For some dataset
+    (1) randomly split the the individuals into two equal sized (or close to) sets
+    (2) mask the observations in one set (testing set), keep observations for other set (training set)
+    (3) fit the model using training set and predict the values for the missing individuals
+    (4) take the correlation between predicted GEBVs for test set and observed phenotypes for test set
+    (5) repeat 1 - 4
+    
+# Two fold cross validation
+```{r CV data, echo = T}
+pheno_train <- pheno
+#define the testing and training sets
+set.seed(123)
+train_set <- sample (1:length(pheno$GHID), size = length(pheno$GHID)/2)
+test_set <- setdiff(1:length(pheno$GHID), train_set)
+length(train_set)
+length(test_set)
+#Mask the phenotypes for the testing set
+pheno_train[test_set ,]$YLD <- NA
+```
+
+# Run RRBLUP with training set
+```{r training fit, echo = T}
+library(rrBLUP)
+##rrBLUP
+rrBLUP_train <- mixed.solve(y = pheno_train$YLD, Z = Zsc)
+rrBLUP_train <- Zsc %*% rrBLUP_train$u
+length(rrBLUP_train)
+```
+
+# Assess predictive ability from rrBLUP approaches
+```{r PA, echo = T}
+rrBLUP_test <- rrBLUP_train[test_set]
+pheno_test <- pheno[test_set ,]
+
+cor(pheno_test$YLD, rrBLUP_test)
+```
+
 # References
 
 - Endelman, J. B. Ridge regression and other kernels for genomic selection with R package rrBLUP. Plant Genome 4, 250–255 (2011).
 
-- Spindel, J. et al. Genomic selection and association mapping in rice (Oryza sativa): effect of trait genetic architecture, training population composition, marker number and statistical model on accuracy of rice genomic selection in elite, tropical rice breeding lines. PLoS Genet. 11, e1004982 (2015).
+- Habier, D., Fernando, R. L. & Dekkers, J. C. M. The impact of genetic relationship information on genome-assisted breeding values. Genetics 177, 2389–2397 (2007).
 
-- Zhao, K. et al. Genome-wide association mapping reveals a rich genetic architecture of complex traits in Oryza sativa. Nat. Commun. 2, 467 (2011).
+- Meuwissen, T. H. E., Hayes, B. J. & Goddard, M. E. Prediction of total genetic value using genome-wide dense marker maps. Genetics 157, 1819–1829 (2001).
+
+- Spindel, J. et al. Genomic selection and association mapping in rice (Oryza sativa): effect of trait genetic architecture, training population composition, marker number and statistical model on accuracy of rice genomic selection in elite, tropical rice breeding lines. PLoS Genet. 11, e1004982 (2015).

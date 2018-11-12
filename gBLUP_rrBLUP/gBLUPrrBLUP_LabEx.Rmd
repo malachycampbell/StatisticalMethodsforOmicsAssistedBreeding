@@ -1,0 +1,262 @@
+---
+title: "Lab: genomic BLUP and ridge regression BLUP"
+author: "Malachy Campbell"
+date: "10/25/2018"
+output:
+  rmdformats::html_clean:
+    highlight: kate
+    self_contained: no
+---
+
+
+```{r knitr_init, echo=FALSE, cache=FALSE}
+library(knitr)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=FALSE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rrBLUP)
+```
+
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 14px;
+  }
+td {  /* Table  */
+  font-size: 8px;
+}
+h1.title {
+  font-size: 38px;
+  color: DarkRed;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: DarkBlue;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: DarkBlue;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: DarkBlue;
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+# Estimating genetic values using genomic BLUP (gBLUP) and ridge regression BLUP (rrBLUP)
+
+The data is for 19 traits for 299 elite rice lines from IRRI (Spindel et al 2015). We'll just focus on yeild. For convinience, I have also provided the necessary files here [GitHub](XXXX). The purpose is to show you that gBLUP and rrBLUP yeild equivalent results.
+
+## Load phenotypic and genotypic data
+
+```{r load spindel data, echo = T}
+##Clear all objects
+rm(list = ls())
+
+# Load the data
+pheno <- read.csv("~/Downloads/Spindel/pheno_WS.csv")
+dim(pheno)
+
+geno <- read.table("~/Downloads/Spindel/Spindel_geno.txt", 
+                   sep = "\t", header = T, row.names = 1)
+dim(geno)
+geno <- t(geno)
+dim(geno)
+
+sum(row.names(geno) == pheno$GHID)
+```
+
+## Calculate the GRM
+Here, we'll calculate the centered marker matrix, scaled and centered marker matrix, and the genomic relationship matrix.
+
+```{r GRM for spindel, echo = T}
+head(geno[,1:5])
+
+Zsc <- scale(x = geno, center = T, scale = T)
+GRM <- tcrossprod(Zsc)/ncol(geno)
+
+dim(GRM)
+```
+
+# rrBLUP package
+
+Key functions:
+  mixed.solve()
+  GWAS
+
+## gBLUP
+
+```{r gBLUP via rrBLUP, echo = T}
+library(rrBLUP)
+
+#MM with rrBLUP regression on G
+gBLUP <- mixed.solve(y = pheno$YLD, K = GRM)
+names(gBLUP)
+
+length(gBLUP$u)
+```
+
+## rrBLUP
+
+```{r rrBLUP via rrBLUP, echo = T}
+library(rrBLUP)
+Zc <- scale(x = geno, center = T, scale = F)
+
+#MM with rrBLUP regression on markers
+rrBLUP <- mixed.solve(y = pheno$YLD, Z = Zc)
+names(rrBLUP)
+
+length(rrBLUP$u)
+```
+
+## Comparing GEBVs from rrBLUP and gBLUP
+
+Calculate the genomic breeding values. 
+```{r rrBLUP v gBLUP, echo = T}
+#calculate GEBVs from predicted marker effects
+gBLUP_rr <- Zc %*% rrBLUP$u
+
+gBLUP_YLD <- gBLUP$u + as.numeric(gBLUP$beta)
+gBLUP_rr_YLD <- gBLUP_rr + as.numeric(rrBLUP$beta)
+```
+
+
+Plot the results.
+```{r rrBLUP v gBLUP plot, echo = T, fig.height=3.4, fig.width=6.4, fig.align="center"}
+par(mar=c(3,4,0.5,0.5), mgp=c(1.8,0.5,0), xpd = F, cex.lab = 0.5, 
+    cex.axis = 0.5)
+plot(gBLUP_YLD, gBLUP_rr_YLD, ylab = "Predicted YLD (RR-BLUP)", 
+     xlab = "Predicted YLD (gBLUP)", pch = 21, cex = 0.5)
+
+abline(lm(gBLUP_rr_YLD ~ gBLUP_YLD), col = "red")
+
+text(x = 4400, y = 5200, paste0("r = ", 
+  round(cor(gBLUP_YLD, gBLUP_rr_YLD),2)), col = "red", cex = 0.75)
+```
+
+# Cross validation
+For genomic prediction we need a population that is used to train a model (known lines with phenotypes and genotypes) and a population where we make our predictions (unknown lines with genotypes, but no phenotypes). Since we don't have two datasets we'll do cross validation. Here, the phenotypic records will be masked for half the observations. The remaining lines with records will be used to train the prediction model and predict the values for the lines with missing phenotypes. The accuracy of this model will be assessed by taking the correlation between the observed phenotypes and the predicted GEBVs for the testing population.
+
+
+## Creating the cross validation sets
+This code will randomly split the phenotypic data into two equal subsets (two folds). The phenotypic records will be masked for half the observations. In practice, you will want to repeat the CV process many times. 
+```{r CV data, echo = T}
+pheno_train <- pheno
+#define the testing and training sets
+set.seed(123)
+train_set <- sample (1:length(pheno$GHID), size = length(pheno$GHID)/2)
+test_set <- setdiff(1:length(pheno$GHID), train_set)
+length(train_set)
+length(test_set)
+#Mask the phenotypes for the testing set
+pheno_train[test_set ,]$YLD <- NA
+```
+
+## Run RRBLUP with training set
+```{r training fit, echo = T}
+library(rrBLUP)
+##rrBLUP
+rrBLUP_train <- mixed.solve(y = pheno_train$YLD, Z = Zsc)
+rrBLUP_train <- Zsc %*% rrBLUP_train$u
+length(rrBLUP_train)
+```
+
+## Assess predictive ability from rrBLUP approaches
+```{r PA, echo = T}
+rrBLUP_test <- rrBLUP_train[test_set]
+pheno_test <- pheno[test_set ,]
+
+cor(pheno_test$YLD, rrBLUP_test)
+```
+
+# Example of working with plink formatted SNP data in R 
+The data is for a rice diversity panel of ~413 accessions. The raw data can be downloaded here: [Rice Diversity](http://ricediversity.org/data/sets/44kgwas). For convinience, I have also provided the necessary files here [GitHub](XXXX). Below I've provided a few examples of how to process some genotypic data in PLINK format. [Plink](http://zzz.bwh.harvard.edu/plink/) is a software program that is widely used for genetic analyses using SNP data. It is very popular in human genetics, and as a result, their format has become widely used to store genotypic data. 
+
+The files usually consist of a pedigree (.ped) file that has all the genotypic data and some meta data. The first six columns are: Family ID, Individual ID, Paternal ID, Maternal ID, Sex (1=male; 2=female; other=unknown), Phenotype. The following columns are the alleles for each biallelic SNP. Each allele has its own column (no. columns = 2* No SNPs + 6). The family (.fam ) file is just the first six columns of the .ped file. Finally, a map file (.map) is provided that lists the SNP name, chromosome, and position for each SNP
+
+We'll use the BGLR package to load SNP data into R.
+```{r load genotypic data, echo = T}
+library(BGLR)
+
+#BGLR doesn't like the tilde shortcut in mac, so you'll have to provide the full path
+FAM <- read.table("/Users/malachycampbell/Downloads/ZhaoData/RiceDiversity_44K_Genotypes_PLINK/sativas413.fam")[1:2]
+PED <- read_ped("/Users/malachycampbell/Downloads/ZhaoData/RiceDiversity_44K_Genotypes_PLINK/sativas413.ped")
+
+MAP <- read.delim("/Users/malachycampbell/Downloads/ZhaoData/RiceDiversity_44K_Genotypes_PLINK/sativas413.map", sep="\t", header=F)
+
+#no of markers (m), lines (n), and the genotypic data (PED)
+m <- PED$p
+n <- PED$n
+PED <- PED$x
+
+## In BGLR SNPs from PED are coded as 0, 1, 2, 3. SNPs with 2 indicate missing data, 1 are heterozygous, 0 and 3 are homozygous for 1/1 and 2/2 for major allele and minor allele respectively
+PED[PED == 2] <- NA 
+PED[PED == 0] <- 0
+PED[PED == 1] <- 1
+PED[PED == 3] <- 2
+
+#Make the n x m marker matrix
+W <- t(matrix(PED, nrow = m, ncol = n, byrow = T))
+rownames(W) <- FAM$V2
+colnames(W) <- MAP$V2
+```
+
+# Impute missing markers
+```{r impute missing markers with the mean, echo = T}
+
+#calculate the frequency of missing information
+missing.freq <- apply(W, 1, function (x) sum(is.na(x))/length(x))
+
+summary(missing.freq)
+
+#impute missing with mean
+for (j in 1:ncol(W)) {
+  W[, j] <- ifelse(is.na(W[, j]), mean(W[, j], na.rm = TRUE), W[, j])
+}
+```
+
+# Filter based on minor allele frequency
+Here, we'll remove markers with a minor allele frequency (MAF) of less than 5%. First we need to remove individuals that aren't phenotyped, but are genotyped. 
+```{r MAF filter, echo = T}
+W <- W[row.names(W) %in% pheno$NSFTVID ,]
+#Allele frequency
+freq <- colMeans(W) / 2
+
+#If the frequency of 1 is > 0.5 then 1 is the major allele, therefore 1 - the freq of the major allele is MAF
+maf <- ifelse(freq > 0.5, 1-freq, freq)
+maf.index <- which(maf < 0.05)
+W <- W[, -maf.index]
+dim(W)
+```
+
+# Calculate the GRM
+Here, we'll calculate the centered marker matrix, scaled and centered marker matrix, and the genomic relationship matrix.
+```{r Zsc Zc GRM}
+#centered
+Zc <- scale(x = W, center = T, scale = F)
+
+#scaled and centered
+Zsc <- scale(x = W, center = T, scale = T)
+
+#GRM
+GRM <- tcrossprod(Zsc)/ncol(W)
+```
