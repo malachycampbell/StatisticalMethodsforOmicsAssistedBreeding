@@ -19,19 +19,19 @@ library(rrBLUP)
 
 # Learning Objectives
 
-1. Participants will be able to calculate a GRM
+1. Calculate a GRM
 	
-2. Participants will be able to run gBLUP
+2. Run gBLUP
 	
-3. Participants will be able to run rrBLUP
+3. Run rrBLUP
 	
 4. Participants will be understand the equivalency of gBLUP and rrBLUP
 
 # Outline
 
-A. Demonstration with Spindel data
+- Demonstration with Spindel data
 
-B. On your own (1) gBLUP and rrBLUP Zhao data set, (2) cross validation
+- On your own (1) gBLUP and rrBLUP Zhao data set, (2) cross validation
 
 # Spindel data set
 
@@ -111,6 +111,7 @@ length(rrBLUP$u)
 - Recall $$\hat g = W \hat a$$ 
 
 - Thus, here we'll leverage that to calculate the breeding values (GEBVs) from the predicted marker effects
+
 \footnotesize
 ```{r rrBLUP v gBLUP, echo = T}
 #calculate GEBVs from predicted marker effects
@@ -142,3 +143,11 @@ text(x = 4400, y = 5200, paste0("r = ",
     - You will have to (1) recode the SNP data, (2) partition and mask the data for cross validation
 
         - See the examples in the file 'gBLUP_RRBLUP_ex.Rmd'
+        
+# References
+
+- Endelman, J. B. Ridge regression and other kernels for genomic selection with R package rrBLUP. Plant Genome 4, 250–255 (2011).
+
+- Spindel, J. et al. Genomic selection and association mapping in rice (Oryza sativa): effect of trait genetic architecture, training population composition, marker number and statistical model on accuracy of rice genomic selection in elite, tropical rice breeding lines. PLoS Genet. 11, e1004982 (2015).
+
+- Zhao, K. et al. Genome-wide association mapping reveals a rich genetic architecture of complex traits in Oryza sativa. Nat. Commun. 2, 467 (2011).

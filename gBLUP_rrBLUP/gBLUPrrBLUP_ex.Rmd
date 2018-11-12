@@ -8,14 +8,6 @@ output:
     self_contained: no
 ---
 
----
-title: ""
-date: "`r Sys.Date()`"
-output:
-  rmdformats::html_clean:
-    highlight: kate
----
-
 
 ```{r knitr_init, echo=FALSE, cache=FALSE}
 library(knitr)
@@ -37,11 +29,43 @@ knitr::opts_chunk$set(echo = TRUE)
 library(rrBLUP)
 ```
 
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 8px;
+}
+h1.title {
+  font-size: 38px;
+  color: DarkRed;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: DarkBlue;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: DarkBlue;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: DarkBlue;
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
 
 # Genomic prediction using genomic BLUP and ridge regression BLUP: Zhao data
 The data is for 34 traits for a rice diversity panel evaluated. The raw data can be downloaded here: [Rice Diversity](http://ricediversity.org/data/sets/44kgwas). For convinience, I have also provided the necessary files here [GitHub](XXXX). Below I've provided a few examples of how to process some genotypic data in PLINK format, and a chunk of code to do one round of two-fold cross validation. You will have to modify these codes slightly to accomidate you own data
 
-# Load and clean up phentypic data
+# Load and clean up phenotypic data
 The phenotypic data has two columns of identifiers, 'HybID' and 'NSFTVID'. For this example I will use plant height as the phenotype and NSFTVID as the identifier.
 ```{r load Zhao data, echo = T}
 #phenotypes
