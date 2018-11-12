@@ -166,6 +166,8 @@ maf <- matrix(c(rep(c(0.01, 0.15, 0.25, 0.5), 3) ),
 print((M-1) %*% t(M-1))
 ``` 
 
+- Individuals 2 and 3 share the rare allele
+
 ## Marker-based approach: scale ${\bf G}$ so that it is analogous to ${\bf A}$
 -  As the number of markers in ${\bf Z}$ increases, so does the elements of ${\bf ZZ'}$
     - To be comparable we must make ${\bf ZZ'}$ independant of the number of markers
@@ -184,7 +186,7 @@ sumvar <- 2*sum(maf*(1-maf))
 print((Z %*% t(Z)) / sumvar)
 ```  
     
-## Genomic relationship matrix ${\bf G}$
+## Properties of the genomic relationship matrix ${\bf G}$
 - Elements of ${\bf G}$ are twice the realized kinship coefficients
 - Diagonal elements indicate the degree of inbreeding for individuals ($E(\Theta_{ii}) = 1 + F_{i}$, where $F_{i}$ is the inbreeding coefficient)
     - 1 for non-inbred individuals
@@ -238,7 +240,7 @@ $$\mathbf{y} = \mathbf{X\boldsymbol{\beta}} + \mathbf{Zu} + e$$
 \end{align}
 
 ## Estimating genetic parameters with $\mathbf{G}$ via the "Animal" model
-- Use maximum likelihood (ML) or restricted maximum likelihood to solve model
+- Use maximum likelihood (ML) or restricted maximum likelihood (REML) to solve model
     - Goal is to find a set of parameters that maximizes the likelihood of the data
     - ML: Estimates all parameters together; assumes no error in estimating fixed effects
     - REML: Allows for loss of degrees of freedom for estimating fixed effects
@@ -247,7 +249,7 @@ $$\mathbf{y} = \mathbf{X\boldsymbol{\beta}} + \mathbf{Zu} + e$$
 
 - No need to solve it by hand!
     - standalone: ASREML, GCTA, BLUPF90, Wombat
-    - R: 'nlme', 'lme4', 'ASREML-R', 'rrBLUP', 'bWGR', 'BGLR'
+    - R: 'ASREML-R', 'rrBLUP', 'bWGR', 'BGLR'
 
 ## REML algorithms
 - Some terminology... 
@@ -257,7 +259,8 @@ $$\mathbf{y} = \mathbf{X\boldsymbol{\beta}} + \mathbf{Zu} + e$$
 
 - Newton-Raphson: Iterative procedure based on second-order Taylor series approximation of LL 
 
-    - $\theta \cong \widetilde{\theta } - \left [ H(\widetilde{\Theta }) \right ]^{-1} s(\widetilde{\theta})$, where $s(\widetilde{\theta})$ is the score function and $\left [ H(\widetilde{\Theta }) \right ]^{-1}$ is the Hessian matrix
+    - $\theta \cong \widetilde{\theta } - \left [ H(\widetilde{\Theta }) \right ]^{-1} s(\widetilde{\theta})$, where $s(\widetilde{\theta})$ is the score function, $\left [ H(\widetilde{\Theta }) \right ]^{-1}$ is the Hessian matrix, $\widetilde{\theta }$ is the current estimate for some parameter, and $\theta$ is the updated parameter
+    
     - At each iteration take a current estimate for parameter and use it to update score function and Hessian matrix
 
 ## REML algorithms
@@ -318,7 +321,7 @@ Fisher's score: is the first derivative of the likelihood function. Set it to ze
 The real genetic values depend only on QTL, not additional 'non-pertent' markers
 --->
 
-## A cautionary tale of genomic heritability: de los Campos, Sorrensen, Gianola (2015)
+## A cautionary tale of genomic heritability: de los Campos et al (2013)
 
 - Six simulated scenarios for construction of $\bf G$: 1. Only QTL; 2. QTL and markers in LD with QTL; 3. All loci (causal and non-causal); 4. Only markers in LD with QTL; 5. Only markers in LE with QTL (non-informative for $\sigma_p^2$); 6. All markers (LD and LE with QTL)
     - $h^2$ fixed at 0.5
@@ -345,33 +348,8 @@ The real genetic values depend only on QTL, not additional 'non-pertent' markers
     - \textcolor{red}{Cosegregation of markers and QTL are due to recent relationships}
 
 
+## Further reading
 
-## Questions?
+- de los Campos, G., Vazquez, A. I., Fernando, R., Klimentidis, Y. C. and Sorensen, D. Prediction of complex human traits using the genomic best linear unbiased predictor. PLoS Genet. 9, e1003608 (2013)
 
-Questions?
-
-
-## How do we measure heritability?
-
-- Prior to genetic markers what did we need?
-
-## How do we measure heritability?
-
-- What do we need?
-
-    - Need a population with related individuals
- <!---
- Rationale is that parents pass on genetic information to their offspring. Various mating designs allow $h^2$ to be quantified. If we have a complex popualtion we need some way to quantify relationships via pedigree
- --->
-    
-    - Need a means to assess genetic relatedness between individuals
-<!---
- If we have a complex popualtion we need some way to quantify relationships via pedigree. Now with markers we can assess relationships without knowning the pedigree.
- --->
-    
-    - Need methods to partition variance into genetic and non-genetic effects
-<!---
-Regression: Regress offspring on parental phenotypes
-ANOVA: Partition variance into within and among family variance
-ML/REML: Leverage genetic relatedness in complex populations to partition phenotypic variance to genetic and non-genetic components (can accomidatate complex genetic realtionships)
---->
+- de los Campos, G., Sorensen, D. & Gianola, D. Genomic heritability: what is it? PLoS Genet. 11, e1005048 (2015).
