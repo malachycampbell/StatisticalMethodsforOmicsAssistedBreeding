@@ -23,7 +23,7 @@ Learning objectives:
 
   1. Brief overview of ordinary least squares (OLS) and mixed models (MM)
 
-  2. Estimate genetic values and $h^2$ using OLS and MM. 
+  2. Estimate line values and $h^2$ using OLS and MM. 
 
   3. Learn to deal with unbalanced data
     
@@ -49,7 +49,7 @@ maize <- read.csv("~/Downloads/MaizeRILs.csv")
 head(maize)
 ```
 
-# Obtaining genetic values with OLS
+# Obtaining line values with OLS
 - For this dataset we can fit the following model:
 
 $$y_{ijk} = \mu + L_i + Rep(L)_{ij} + G_k + GL_{ik} + e_{ijk}$$ 
@@ -64,7 +64,7 @@ $$y_{ijk} = \mu + L_i + Rep(L)_{ij} + G_k + GL_{ik} + e_{ijk}$$
 
 **Here's everything except the error term is considered as a fixed effect**
 
-# Obtaining genetic values with OLS
+# Obtaining line values with OLS
 
 - Fit the linear model with lm in R
 
@@ -77,7 +77,7 @@ mod1 <- lm(height ~ location*RIL + rep:location, data = maize)
 anova(mod1)
 ```
 
-# Obtaining genetic values with OLS
+# Obtaining line values with OLS
 
 -  Use the output of lm to estimate the marginal means
 
@@ -85,7 +85,7 @@ anova(mod1)
 
 $$RIL11 = \mu + \bar{L} + G_{RIL11} + \bar{GL}_{RIL11} + \bar{Rep(L)}$$
 
-# Obtaining genetic values with OLS
+# Obtaining line values with OLS
 \footnotesize
 ```{r marginal means for RIL11, echo = T}
 #intercept
@@ -143,14 +143,14 @@ H2.OLS <- sigma_G / (sigma_G + sigma_G.E/4 + sigma_err/8)
 print(H2.OLS)
 ```
 
-# Obtaining genetic values (BLUEs) with a mixed model
+# Obtaining line values (BLUEs) with a mixed model
 - We will fit a mixed model to estimate line values for each RIL 
 
     - $RIL$ as a fixed effect, and $Loc$ and $Rep$ as random effects
     
     - $Var(Loc) \sim N(0, \mathbf{I}\sigma^2_{LOC})$, $Var(rep) \sim N(0, \mathbf{I}\sigma^2_{rep})$, and $Var(e) \sim N(0, \mathbf{I}\sigma^2_{e})$
 
-# Obtaining genetic values (BLUEs) with a mixed model in lme4
+# Obtaining line values (BLUEs) with a mixed model in lme4
 - Random terms are specified by '(1|some term)'.
   - '(1|location/rep)' is the random effect of rep nested within location
   - '(1|location:RIL)' is the random effect of location x RIL interaction
