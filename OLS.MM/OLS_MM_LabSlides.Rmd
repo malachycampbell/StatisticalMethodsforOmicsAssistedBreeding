@@ -38,7 +38,7 @@ Learning objectives:
   
     - We'll use height as the response variable.
 
-- See Isik and 
+- See Isik, Holland and Maltecca (2017)
 
 # Loading the data.
 
@@ -206,3 +206,7 @@ blups_m3 <- ranef(mod3)$RIL
 - Run a similar analyis with the unbalanced data and compare OLS and MM approaches
 
 - Which is more trustworthy?
+
+# Reference
+
+- Isik, F., Holland, J. & Maltecca, C. Genetic data analysis for plant and animal breeding. (Springer, 2017).
