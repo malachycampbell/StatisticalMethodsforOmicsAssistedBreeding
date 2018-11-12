@@ -245,11 +245,70 @@ $$\mathbf{y} = \mathbf{X\boldsymbol{\beta}} + \mathbf{Zu} + e$$
     - ML: Estimates all parameters together; assumes no error in estimating fixed effects
     - REML: Allows for loss of degrees of freedom for estimating fixed effects
     
-- Little difference between ML or REML if # of fixed effects is small
 
 - No need to solve it by hand!
     - standalone: ASREML, GCTA, BLUPF90, Wombat
     - R: 'ASREML-R', 'rrBLUP', 'bWGR', 'BGLR'
+
+## A cautionary tale of genomic heritability
+
+- Is genomic heritability a good approximation of $h^2$?
+
+- $\mathbf{G} = \frac{\mathbf{ZZ'}}{2\sum_{1}^{i}p_i(1-pi)}$
+
+    - What information is captured with $\bf Z$?
+    
+## A cautionary tale of genomic heritability
+
+- Is genomic heritability a good approximation of $h^2$?
+
+- $\mathbf{G} = \frac{\mathbf{ZZ'}}{2\sum_{1}^{i}p_i(1-pi)}$
+    
+    - What information is captured with $\bf Z$?
+        
+        - QTLs are typed by markers
+        
+        - Markers in LD with QTL
+        
+        - Markers in LE with QTL
+
+<!---
+The real genetic values depend only on QTL, not additional 'non-pertent' markers
+--->
+
+## A cautionary tale of genomic heritability: de los Campos et al (2013)
+
+- Six simulated scenarios for construction of $\bf G$: 1. Only QTL; 2. QTL and markers in LD with QTL; 3. All loci (causal and non-causal); 4. Only markers in LD with QTL; 5. All markers (LD and LE with QTL); 6. Only markers in LE with QTL (non-informative for $\sigma_p^2$)
+    - $h^2$ fixed at 0.5
+
+![](delosCampos_2015.jpg){width=225px}    
+
+<!---
+- Scenarios 1-3 expect no missing heriability because QTLs are included
+
+- Scenarios 4-6 expect missing heriability because QTLs not included; 5 is essentially the null model
+--->
+
+- \textcolor{red}{Incomplete linkage between causal loci and marker leads to missing heritability. Thus $h^2 \neq h_g^2$}
+
+
+## A cautionary tale of genomic heritability: de los Campos, Sorrensen, Gianola (2015)
+
+- Comparing $h^2$ and $h_g^2$ in related (FHS) and unrelated populations (GEN)
+
+![](delosCampos_2013.jpg){width=250px}
+
+- Proportion of allele sharing at markers and QTL are greater for related individuals compared to unrelated individuals
+
+    - \textcolor{red}{Cosegregation of markers and QTL are due to recent relationships}
+
+
+## Further reading
+
+- de los Campos, G., Vazquez, A. I., Fernando, R., Klimentidis, Y. C. and Sorensen, D. Prediction of complex human traits using the genomic best linear unbiased predictor. PLoS Genet. 9, e1003608 (2013)
+
+- de los Campos, G., Sorensen, D. & Gianola, D. Genomic heritability: what is it? PLoS Genet. 11, e1005048 (2015).
+
 
 ## REML algorithms
 - Some terminology... 
@@ -295,61 +354,3 @@ Fisher's score: is the first derivative of the likelihood function. Set it to ze
         **3.** Rerun (2) using updated values, repeat until convergence 
     
     
-## A cautionary tale of genomic heritability
-
-- Is genomic heritability a good approximation of $h^2$?
-
-- $\mathbf{G} = \frac{\mathbf{ZZ'}}{2\sum_{1}^{i}p_i(1-pi)}$
-
-    - What information is captured with $\bf Z$?
-    
-## A cautionary tale of genomic heritability
-
-- Is genomic heritability a good approximation of $h^2$?
-
-- $\mathbf{G} = \frac{\mathbf{ZZ'}}{2\sum_{1}^{i}p_i(1-pi)}$
-    
-    - What information is captured with $\bf Z$?
-        
-        - QTLs are typed by markers
-        
-        - Markers in LD with QTL
-        
-        - Markers in LE with QTL
-
-<!---
-The real genetic values depend only on QTL, not additional 'non-pertent' markers
---->
-
-## A cautionary tale of genomic heritability: de los Campos et al (2013)
-
-- Six simulated scenarios for construction of $\bf G$: 1. Only QTL; 2. QTL and markers in LD with QTL; 3. All loci (causal and non-causal); 4. Only markers in LD with QTL; 5. Only markers in LE with QTL (non-informative for $\sigma_p^2$); 6. All markers (LD and LE with QTL)
-    - $h^2$ fixed at 0.5
-
-![](delosCampos_2015.jpg){width=225px}    
-
-<!---
-- Scenarios 1-3 expect no missing heriability because QTLs are included
-
-- Scenarios 4-6 expect missing heriability because QTLs not included; 5 is essentially the null model
---->
-
-- \textcolor{red}{Incomplete linkage between causal loci and marker leads to missing heritability. Thus $h^2 \neq h_g^2$}
-
-
-## A cautionary tale of genomic heritability: de los Campos, Sorrensen, Gianola (2015)
-
-- Comparing $h^2$ and $h_g^2$ in related (FHS) and unrelated populations (GEN)
-
-![](delosCampos_2013.jpg){width=250px}
-
-- Proportion of allele sharing at markers and QTL are greater for related individuals compared to unrelated individuals
-
-    - \textcolor{red}{Cosegregation of markers and QTL are due to recent relationships}
-
-
-## Further reading
-
-- de los Campos, G., Vazquez, A. I., Fernando, R., Klimentidis, Y. C. and Sorensen, D. Prediction of complex human traits using the genomic best linear unbiased predictor. PLoS Genet. 9, e1003608 (2013)
-
-- de los Campos, G., Sorensen, D. & Gianola, D. Genomic heritability: what is it? PLoS Genet. 11, e1005048 (2015).
