@@ -52,7 +52,7 @@ Slides for short course on 'omics assisted breeding methods.
   - 12:00-13:00 Lunch
   - 13:00-14:00 GBLUP and RR-BLUP (MC, GM)
     - Lab slides [[PDF Slides]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/tree/master/gBLUP_rrBLUP/gBLUP_RRBLUP_LabSlides.pdf)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/tree/master/gBLUP_rrBLUP/gBLUP_RRBLUP_LabSlides.Rmd)[[Data]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/tree/master/gBLUP_rrBLUP/SpindellData.zip)
-    - [[PDF Slides]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/tree/master/gBLUP_rrBLUP/gBLUP_RRBLUP_LabEx.pdf)[[.HTML]](https://htmlpreview.github.io/?https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/tree/master/gBLUP_rrBLUP/gBLUPrrBLUP_LabEx.html)[[Data]][[.HTML]](https://htmlpreview.github.io/?https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/tree/master/gBLUP_rrBLUP/ZhaoData.zip)
+    - [[PDF Slides]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/tree/master/gBLUP_rrBLUP/gBLUPRRBLUP_LabEx.pdf)[[.HTML]](https://htmlpreview.github.io/?https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/tree/master/gBLUP_rrBLUP/gBLUPrrBLUPLabEx.html)[[Data]][[.HTML]](https://htmlpreview.github.io/?https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/tree/master/gBLUP_rrBLUP/ZhaoData.zip)
   - 14:00-15:00 Bayesian alphabet (DJ)
   - 15:00-15:10 Break
   - 15:10-16:10 Classical GxE including FW, AMMI, and biplot (HI, DJ)
