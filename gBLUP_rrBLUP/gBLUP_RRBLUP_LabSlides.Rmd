@@ -52,7 +52,7 @@ $$ \mathbf{y} = 1 \mu + \sum_k x_k \beta + \epsilon $$
 
 - Proposed before the 'big data' trend by Meuwissen et al (2001)
 
-- $\hat{\beta} = \mathbf{X'}(\mathbf{XX'} + \lambda \mathbf{I})^{-1} \mathbf{y}$
+- $\hat{\beta} = \mathbf{X'}(\mathbf{X'X} + \lambda \mathbf{I})^{-1} \mathbf{y}$
 
     - $\lambda = \frac{\sigma^2_e}{\sigma^2_\beta}$
 
