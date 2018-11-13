@@ -77,3 +77,15 @@ Slides for short course on 'omics assisted breeding methods.
   - 15:00-15:10 Break
   - 15:10-17:00 Experimental design + Optimal designs (ET)
 
+
+**Useful software and other resources:**
+- [CNS genomics](http://cnsgenomics.com/software.html): This is Peter Visscher's group. Really, too many useful resources to list. 
+
+- [TASSEL](http://www.maizegenetics.net/tassel): This is a great software that can be used for GWAS and genomic prediction. It is available as a standalone GUI or can be executed from the command line. It can read in SNP data in Hapmap, HDF5 (Hierarchical Data Format version 5), VCF (Variant Call Format), Plink, Projection Alignment, Phylip, FASTA, and Numerical formats. Includes pipelines for imputation and GBS. Conveniently, there is a huge community that have provided great documentation and tutorials, and have an active message board can help with issues.
+
+- [GAPIT](http://www.zzlab.net/GAPIT/): A nice R package that can be used for GWAS and genomic prediction. Pretty straight forward to use.
+
+- [Jeff Endelman's Page](https://potatobreeding.cals.wisc.edu/software/): The author of the rrBLUP package.
+
+- [PBGworks YouTube channel](https://www.youtube.com/plantbreedgenomics): Some nice tutorials for GWAS and genomic prediction.
+    - Also check out their [extension page](https://articles.extension.org/plant_breeding_genomics).
