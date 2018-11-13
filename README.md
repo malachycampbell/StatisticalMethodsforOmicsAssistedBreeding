@@ -89,3 +89,7 @@ Slides for short course on 'omics assisted breeding methods.
 
 - [PBGworks YouTube channel](https://www.youtube.com/plantbreedgenomics): Some nice tutorials for GWAS and genomic prediction.
     - Also check out their [extension page](https://articles.extension.org/plant_breeding_genomics).
+  
+- [Bayesian Generalized Linear Regression (BGLR) package](https://cran.r-project.org/web/packages/BGLR/index.html): An R packages that performs several types of Bayesian regression models. Check out their original [publication](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4196607/) and [tutorial](http://bglr.r-forge.r-project.org/BGLR-tutorial.pdf) for more information.
+
+- [Rice Diversity](http://ricediversity.org/): If you need some data, this is a great place to access good phenotypic and genotypic data. 
