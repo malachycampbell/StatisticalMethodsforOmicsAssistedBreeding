@@ -218,7 +218,7 @@ A1304         0         0         0         0         0</code></pre>
 </div>
 <div id="rrblup-package" class="section level1">
 <h1>rrBLUP package</h1>
-<p>Key functions: mixed.solve() GWAS</p>
+<p>Key functions: <code>mixed.solve()</code>: This will do gBLUP or rrBLUP depending on what is passed to it. <code>GWAS()</code>: This will perform GWAS based on the mixed model by <a href="https://www.nature.com/articles/ng1702">Yu et al. (2006)</a>. Be cautious about the results. Replace 0 -log<span class="math inline">\(_{10}(p-\textrm{value})\)</span> with ‘NA’ when controling for FDR.</p>
 <div id="gblup" class="section level2">
 <h2>gBLUP</h2>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">library</span>(rrBLUP)</a>

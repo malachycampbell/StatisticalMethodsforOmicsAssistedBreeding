@@ -100,8 +100,8 @@ dim(GRM)
 # rrBLUP package
 
 Key functions:
-  mixed.solve()
-  GWAS
+  `mixed.solve()`: This will do gBLUP or rrBLUP depending on what is passed to it.
+  `GWAS()`: This will perform GWAS based on the mixed model by [Yu et al. (2006)](https://www.nature.com/articles/ng1702). Be cautious about the results. Replace 0 -log$_{10}(p-\textrm{value})$ with 'NA' when controling for FDR.
 
 ## gBLUP
 
