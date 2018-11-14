@@ -1,0 +1,272 @@
+---
+title: "Bayesian Networks"
+author: "Malachy Campbell"
+date: "11/15/2018"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction
+
+- A Bayesian network (BN) is a graph that depicts the probabilistic dependancancies between random variables
+
+## Introduction
+
+- A Bayesian network (BN) is a graph that depicts the probabilistic dependancancies between random variables
+
+\begin{center}
+
+\includegraphics[width=300px]{Ex1}
+
+\end{center}
+
+## Introduction
+
+- A Bayesian network (BN) is a graph that depicts the probabilistic dependancancies between random variables
+
+\begin{center}
+
+\includegraphics[width=300px]{Ex2}
+
+\end{center}
+
+## Introduction
+
+\begin{center}
+
+\includegraphics[width=300px]{sachs}
+
+\end{center}
+
+## Introduction
+
+\begin{center}
+
+\includegraphics[width=300px]{hageman}
+
+\end{center}
+
+## Introduction
+
+- Plant breeding/genetics example: Given a dataset of many (10+) agronomic traits (plant height, nitrogen use efficiency, grain protein, grain carbohydrates/starch, leaf area index, radiation use effiency, yeild), how does selection for one (e.g. grain protein) impact another (e.g. grain yeild)?
+
+    - More on this later...
+
+## (Very basic) Theory for BNs
+
+- BNs represent a probability distribution as a probabilistic directed acyclic graph (DAG)
+
+## (Very basic) Theory for BNs
+- A graph ($G = (V,A)$) is composed of nodes ($V$) and vertices/arcs ($A$)
+  - Nodes ($u$, $v$): variables or traits
+  - Arcs ($a = (u, v)$: describe the relationships between nodes $u$ and $v$
+      - If $u$ and $v$ are ordered then the arc is directed, $u$ and $v$ unordered then the arc is undirected.
+      
+- Undirected graphs: no ordering between nodes; Directed graphs: all arcs are ordered; Partially directed graphs: some arcs are ordered
+
+- Paths: sequences of arcs connecting two nodes; passes through each arc only once and all arcs follow the same direction
+
+## (Very basic) Theory for BNs
+- **Chain rule**: Joint probability distribution of $i$ random variables ($x_1, x_2, x_3, x_4$) is $\textrm{P}(x_1, x_2, x_3, x_4) = \textrm{P}(x_4 | x_1, x_2, x_3) \textrm{P}(x_3 | x_1, x_2) \textrm{P}(x_2 | x_1) \textrm{P}(x_1)$
+
+<!---
+Calculate joint probability using conditional probabilities
+--->
+
+- So, we can take a joint probability distribution and break it down into a bunch of conditional probabilities
+
+- **Conditional independence**: Given some knowledge of $C$, provides no information on B occurring or A occuring $$ \textrm{P}(A, B | C) = \textrm{P}(A | C) \textrm{P}(B | C)  $$
+
+## (Very basic) Theory for BNs
+- BN are a class of graphical models that represent the probabilistic dependencies between a set of random variables as a directed acyclic graph (no loops!). We can scale these concepts to a graphical model.
+
+\begin{center}
+
+\includegraphics[width=300px]{hageman}
+
+\end{center}
+
+## (Very basic) Theory for BNs
+
+- For a **divergent structure** (A) the joint distribution is $\textrm{P}(X1, X2, X3) = \textrm{P}(X2|X1) \textrm{P}(X3|X1) \textrm{P}(X1)$; **serial** structure (B) the joint distribution is $\textrm{P}(X1, X2, X3) = \textrm{P}(X3|X2) \textrm{P}(X2|X1) \textrm{P}(X1)$; **convergent** structure (C) the joint distribution is $\textrm{P}(X1, X2, X3) = \textrm{P}(X2|X1,X3) \textrm{P}(X1) \textrm{P}(X3)$
+
+\begin{center}
+
+\includegraphics[height=75px]{DAGs}
+
+\end{center}
+
+## Bayesian Networks (BN)
+- **Example 1**: If we have no information for the divergent structure, are X2 and X3 independent?
+
+\begin{center}
+
+\includegraphics[height=75px]{divergent}
+
+\end{center}
+
+$$\textrm{P}(X2, X3) = \sum_{X1} \textrm{P}(X2|X1) \textrm{P}(X3|X1) \textrm{P}(X1)$$
+<!---
+Marginalize the joint distribution with respect to X1
+--->
+
+## Bayesian Networks (BN)
+- **Example 2**: If we have information on X1 for the divergent structure, are X2 and X3 independent?
+
+\begin{center}
+
+\includegraphics[height=75px]{divergent_inf}
+
+\end{center}
+
+## Bayesian Networks (BN)
+- **Example 2**: If we have information on X1 for the divergent structure, are X2 and X3 independent?
+
+\begin{center}
+
+\includegraphics[height=75px]{divergent_inf}
+
+\end{center}
+
+$$\textrm{P}(X2, X3|X1) = \textrm{P}(X2|X1) \textrm{P}(X3|X1)$$
+
+## Bayesian Networks (BN)
+- **Example 3**:
+    
+    1. If we don't have information on X2 for the serial structure (A), are X1 and X3 independent?
+    
+    2. If we do have information on X2 for the serial structure (B), are X1 and X3 independent?
+    
+\begin{center}
+
+\includegraphics[height=75px]{serial}
+
+\end{center}
+
+## Bayesian Networks (BN)
+- **Example 3**:
+    
+    1. If we don't have information on X2 for the serial structure (A), are X1 and X3 independent?
+    $\textrm{P}(X1, X3) = \sum_{X2} \textrm{P}(X3|X2) \textrm{P}(X2|X1) \textrm{P}(X1)$
+    
+    2. If we do have information on X2 for the serial structure (B), are X1 and X3 independent?
+    $\textrm{P}(X1, X3|X2) = \textrm{P}(X3|X2) \textrm{P}(X1|X2)$
+    
+\begin{center}
+
+\includegraphics[height=75px]{serial}
+
+\end{center}
+
+
+## Bayesian Networks (BN)
+- **Example 4**:
+    
+    1. If we don't have information on X1 for the convergent structure (A), are X2 and X3 independent?
+    
+    2. If we do have information on X1 for the convergent structure (B), are X2 and X3 independent?
+    
+\begin{center}
+
+\includegraphics[height=75px]{convergent}
+
+\end{center}
+
+## Bayesian Networks (BN)
+- **Example 4**:
+    
+    1. If we don't have information on X1 for the convergent structure (A), are X2 and X3 independent?
+    $\textrm{P}(X2, X3) = \textrm{P}(X2) \textrm{P}(X3)$
+    
+    2. If we do have information on X1 for the convergent structure (B), are X2 and X3 independent?
+    $\textrm{P}(X1, X3|X2) = \frac{\textrm{P}(X3) \textrm{P}(X3) \textrm{P}(X1|X2,X3) }{\textrm{P}(X1)}$
+    
+\begin{center}
+
+\includegraphics[height=75px]{convergent}
+
+\end{center}
+
+## Bayesian Networks (BN): $direct$-separation
+- If we scale this up, each node can be considered a subset of nodes in a DAG
+
+- **$direct$-separation ($d$-separation)**: Determines whether a set of A variables is independent of another
+set C, given a third set B. Reveals relationships and makes inference more efficient!
+
+- *Formal definition*:
+    - Consider only the cases where we have information. Given some information for a group of nodes (**B**), the two subsets of nodes **A** and **C** are conditionally independant if there is a node $w$ that has (1) converging arrows and $w$ nor any of its descendants are part of **B** (e.g. does not carry information), or if $w$ does not have converging arrows and is a part of **B**
+
+<!---
+(1) is demonstrated by example 4B and (2) is demonstrated by example 3B
+--->
+
+## Bayesian Networks (BN): Markov blankets
+
+- The **Markov blanket** for some node is the node's parents, children, and the any other nodes that share a child with the node.
+
+  - Nodes in the Markov blanket $d$-separate the node from the rest of the network
+
+
+## Learning Bayesian Networks (BN)
+
+- Learning the **structure** of the DAG (model selection)
+
+    - Unsupervised or supervised
+
+- Learning the **parameters** of the DAG
+
+## Structure Learning Algorithms
+
+- Three classes:
+
+    - **Constraint-based**: Learn network structure using conditional independence tests. Based off inductive causation (IC) algorithm proposed by Verma and Pearl (1991)
+    
+    - **Score based**: "Search-and-score" Evaluate candidate network structures using a scoring metric, and use an optimization procedure to identify the highest scoring structure that best fits the data.
+    
+    - **Hybrid**: Use constraint-based methods to **restrict** score-based algorithms to a subset of nodes. Score-based algorithms attempt to find the optimal network for the subset of nodes.
+
+
+## IC algorithm (Constraint-based)
+
+1. **Identify pairs of variables connected by arc**. Determine if pair $X$, $Y$, are independent given a subset of variables $\textbf{X}$. If not, join $A$ and $B$ with an undirected arc. Repeat for all pairs.
+    
+2. **Set direction of edges (e.g. find $v$-structures in graph)** in the graph from (1) ($K$) using conditional independence tests. For all triplet structures $X - Z - Y$, determine if $X$ and $Y$ are independent given $Z$. If not, then set as a convergent structure $X \rightarrow Z \leftarrow Y$
+    
+3. **Set direction for remaining arcs** according to these rules (1) if $A \rightarrow B$, $B$ and $C$ are adjacent, $A$ and $C$ are not adjacent, and there is no directed arc at $B$, then set $B - C$ as $B \rightarrow C$; (2) if $A$ and $B$ are adjacent and there is a directed path from $A$ to $B$ then set  $A - B$ to $A \rightarrow B$ 
+    
+## Constraint-based Structure Learning Algorithms
+
+- Steps (1) and (2) of IC are not feasible because the number of combinations is far too high. Modern solutions only consider the local nodes $G$
+
+
+## Constraint-based Structure Learning Algorithms
+
+- **PC algorithm** (Spirtes et al 2001): Similar to IC, but starts will a full undirected network ($G$), but uses a backward selection process to thin size of $G$. Is $X$ and $Y$ independent? Is $X$ and $Y$ independent given first neighbor? Is Is $X$ and $Y$ independent given first and second neighbor? ...
+
+- **Grow-Shrink algorithm** (Margaritis, 2003): Start with an empty set of variables ($S$), and a variable ($X$). The first growing phase adds variables to $S'$ if they are dependent with $X$ given the variable in $S$. In the second shrinking phase, variables that are not in the Markov blanket of $X$ are tested for dependance given $S$.
+
+<!---
+The growing phase adds a lot of nodes that may be way outside the blanket and are not dependant given closer neighbors.
+--->
+
+
+## Score-based Structure Learning Algorithms
+
+- *"Search-and-score"*: Evaluate candidate network structures using a scoring metric, use an optimization procedure to identify the highest scoring structure that best fits the data. 
+    - Scoring metrics: likelihood, log-likelihood, AIC, BIC, Bayesian Dirichlet equivalent, K2
+
+- **Hill climbing/tabu search**: Starting with a network structure ($G_0$) (can be empty) compute score ($Score_0$); modify structure ($G_1$) (add, remove, or reverse arc) and recompute score ($Score_1$); if $Score_1 > Score_0$ then repeat process with $G_1$ until the score is no longer maximized
+
+## Hybrid Structure Learning Algorithms
+
+- Use constraint-based methods to **restrict** score-based algorithms to a subset of nodes. Score-based algorithms attempt to find the optimal network for the subset of nodes.
+
+- *Max-min hill climbing*: Learns the **undirected network** first using the max-min parent children (MMPC) algorithm, and directs the edges using a hill-climbing approach.
+
+## References
+    
+    
+
