@@ -1,5 +1,5 @@
 # Statistical Methods for Omics Assisted Breeding
-Slides for short course on 'omics assisted breeding methods.
+Slides for short course on ['omics assisted breeding methods.](https://sites.google.com/ut-biomet.org/statistical-methods-ws/)
 
 **Dates and Location**
   Monday, November 12 to Thursday, November 15
