@@ -320,7 +320,7 @@ grm <- GRM(geno)
 ### MTM model
 
 ```{r, echo =T, results = 'hide'}
-Y <- pheno.na
+Y <- scale(pheno.na, center = T, scale = T)
 A <- grm
 
 fmU <- MTM(Y = Y,
@@ -366,7 +366,7 @@ gs1 <- gs(salt_u_star, test = "cor", alpha = 0.05)
 
 
 ```{r, fig.align = "center", fig.width = 2, fig.height = 2}
-graphviz.plot(gs1, main = "GS")
+graphviz.plot(gs1, main = "GS", shape = "ellipse")
 ```
 
 #### Placing restrictions on the network
@@ -375,7 +375,7 @@ If we have some knowledge of what the network should look like, we can place res
 ```{r, echo = T}
 #Blacklist example 1
 ##Place some constraints on the DAG
-tiers <- list("Na.Shoot", names(salt_u_star)[c(1, 3:7)])
+tiers <- list("Na.K.Shoot", names(salt_u_star)[c(2:7)])
 blklist <- tiers2blacklist(tiers)
 
 ##Eliminate all nodes leading to Na.K.Shoot

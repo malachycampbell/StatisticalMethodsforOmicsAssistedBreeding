@@ -359,7 +359,7 @@ ped stats and snps stats have been set.
 </div>
 <div id="mtm-model" class="section level3">
 <h3>MTM model</h3>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">Y &lt;-<span class="st"> </span>pheno.na</a>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">Y &lt;-<span class="st"> </span><span class="kw">scale</span>(pheno.na, <span class="dt">center =</span> T, <span class="dt">scale =</span> T)</a>
 <a class="sourceLine" id="cb30-2" data-line-number="2">A &lt;-<span class="st"> </span>grm</a>
 <a class="sourceLine" id="cb30-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb30-4" data-line-number="4">fmU &lt;-<span class="st"> </span><span class="kw">MTM</span>(<span class="dt">Y =</span> Y, <span class="dt">K =</span> <span class="kw">list</span>(<span class="kw">list</span>(<span class="dt">K =</span> A, <span class="dt">COV =</span> <span class="kw">list</span>(<span class="dt">type =</span> <span class="st">&quot;UN&quot;</span>, <span class="dt">df0 =</span> <span class="dv">7</span>, <span class="dt">S0 =</span> <span class="kw">diag</span>(<span class="dv">7</span>)))), </a>
@@ -393,7 +393,7 @@ ped stats and snps stats have been set.
 <h4>Placing restrictions on the network</h4>
 <p>If we have some knowledge of what the network should look like, we can place restrictions on the relationships in the network. BNlearn uses the terms blacklist and whitelist to describe what nodes shouldn’t or should be linked respectively.</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="co"># Blacklist example 1 Place some constraints on the DAG</span></a>
-<a class="sourceLine" id="cb34-2" data-line-number="2">tiers &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="st">&quot;Na.Shoot&quot;</span>, <span class="kw">names</span>(salt_u_star)[<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span><span class="op">:</span><span class="dv">7</span>)])</a>
+<a class="sourceLine" id="cb34-2" data-line-number="2">tiers &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="st">&quot;Na.K.Shoot&quot;</span>, <span class="kw">names</span>(salt_u_star)[<span class="kw">c</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">7</span>)])</a>
 <a class="sourceLine" id="cb34-3" data-line-number="3">blklist &lt;-<span class="st"> </span><span class="kw">tiers2blacklist</span>(tiers)</a>
 <a class="sourceLine" id="cb34-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb34-5" data-line-number="5"><span class="co">## Eliminate all nodes leading to Na.K.Shoot</span></a>
