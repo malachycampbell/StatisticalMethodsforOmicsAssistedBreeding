@@ -65,9 +65,9 @@ knitr::opts_chunk$set(echo = FALSE)
   - Arcs ($a = (u, v)$: describe the relationships between nodes $u$ and $v$
       - If $u$ and $v$ are ordered then the arc is directed, $u$ and $v$ unordered then the arc is undirected.
       
-- Undirected graphs: no ordering between nodes; Directed graphs: all arcs are ordered; Partially directed graphs: some arcs are ordered
+- **Undirected graphs**: no ordering between nodes; Directed graphs: all arcs are ordered; Partially directed graphs: some arcs are ordered
 
-- Paths: sequences of arcs connecting two nodes; passes through each arc only once and all arcs follow the same direction
+- **Paths**: sequences of arcs connecting two nodes; passes through each arc only once and all arcs follow the same direction
 
 ## (Very basic) Theory for BNs
 - **Chain rule**: Joint probability distribution of $i$ random variables ($x_1, x_2, x_3, x_4$) is $\textrm{P}(x_1, x_2, x_3, x_4) = \textrm{P}(x_4 | x_1, x_2, x_3) \textrm{P}(x_3 | x_1, x_2) \textrm{P}(x_2 | x_1) \textrm{P}(x_1)$
@@ -78,7 +78,7 @@ Calculate joint probability using conditional probabilities
 
 - So, we can take a joint probability distribution and break it down into a bunch of conditional probabilities
 
-- **Conditional independence**: Given some knowledge of $C$, provides no information on B occurring or A occuring $$ \textrm{P}(A, B | C) = \textrm{P}(A | C) \textrm{P}(B | C)  $$
+- **Conditional independence**: Given some knowledge of $C$, the outcome of B provides no information on A occuring $$ \textrm{P}(A, B | C) = \textrm{P}(A | C) \textrm{P}(B | C)  $$
 
 ## (Very basic) Theory for BNs
 - BN are a class of graphical models that represent the probabilistic dependencies between a set of random variables as a directed acyclic graph (no loops!). We can scale these concepts to a graphical model.
@@ -267,6 +267,12 @@ The growing phase adds a lot of nodes that may be way outside the blanket and ar
 - *Max-min hill climbing*: Learns the **undirected network** first using the max-min parent children (MMPC) algorithm, and directs the edges using a hill-climbing approach.
 
 ## References
+
+- Margaritis, D. Learning Bayesian network model structure from data. (2003).
+
+- Pearl, J. & Verma, T. A formal theory of inductive causation. (University of California (Los Angeles). Computer Science Department, 1991).
+
+- Spirtes, P. et al. Causation, prediction, and search. (MIT press, 2000).
     
     
 
