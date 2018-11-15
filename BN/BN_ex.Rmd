@@ -1,0 +1,461 @@
+---
+title: "Genomic Applications of Bayesian Networks"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::html_clean:
+    highlight: kate
+    self_contained: no
+---
+
+```{r knitr_init, echo=FALSE, cache=FALSE}
+library(knitr)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=FALSE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75, root.dir = '/Users/malachycampbell/Documents/Dropbox/Work/Presentations/Japan/BN/')
+```
+
+
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 8px;
+}
+h1.title {
+  font-size: 38px;
+  color: DarkRed;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: DarkBlue;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: DarkBlue;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: DarkBlue;
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+```{r load packages, echo = T}
+library(bnlearn)
+library(gaston)
+library(Rgraphviz)
+library(pcaMethods)
+library(BGLR)
+library(MTM)
+```
+
+# Visualizing LD with Bayesian Networks
+The purpose of this exercise is to characterize LD using a BN approach, and compare the results from the BN with the a conventional pairwise measure of LD. 
+## GWAS 
+This GWAS is following the same workflow provided by Dr. Iwata. For a more detailed description see his exercises. Here, we will use the PLINK formatted genotypes instead of the VCF formatted genotypes. Both the phenotypic and genotypic data should be in the Data.zip file.
+
+### Load data
+
+```{r load salt data, echo = T, eval = F}
+pheno <- read.csv("Data/salt_phenotypes.csv", row.names = 1)
+```
+
+```{bash convert ped to bed, echo =T, eval = F}
+plink --file sativas413_imp --make-bed --out sativas413_imp
+```
+
+
+```{r load genotype data, echo = T, eval = F}
+geno <- read.bed.matrix("Data/sativas413_imp")
+geno@ped$id <- paste0("NSFTV_", geno@ped$id)
+geno <- geno[geno@ped$id %in% row.names(pheno) ,]
+geno
+```
+
+### GWAS
+We will use some phenotypic data from RDP1 for Na+, K+, and Na+:K+ content in the roots and shoots. The study is described indepth in [Campbell et al (2017)](https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006823). For GWAS we will focus on Na+ content in the roots.
+
+```{r gwas, echo = T, eval = T, eval = F}
+#First makes sure the order of lines in the phenotypic data matches the genotypic data.
+pheno <- pheno[match(geno@ped$id, row.names(pheno)) ,]
+sum(row.names(pheno) == geno@ped$id)
+
+#add phenotypic data to the bed matrix
+geno@ped$pheno <- pheno[geno@ped$id, "Na.Root"]
+
+#Remove missing data and clean up the SNP data
+geno <- select.inds(geno, !is.na(geno@ped$pheno))
+
+geno <- select.snps(geno, maf > 0.05)
+geno <- select.snps(geno, callrate > 0.9)
+
+#Create the GRM
+grm <- GRM(geno)
+
+#Run GWAS
+gwa <- association.test(geno, method = "lmm", response = "quantitative", test = "lrt", eigenK = eigen(grm), p = 4)
+```
+
+```{r man plot, echo = T, eval = F}
+#Manhattan plot for root Na
+png("man.png", width = 480, height = 480*.75)
+par(mar=c(5.1, 4.1, 4.1, 2.1), mgp=c(3, 1, 0), las=0)
+manhattan(gwa, pch = 20)
+dev.off()
+```
+Notice a major peak on chromosome 4 and a few minor peaks on other chromosomes.
+
+```{r, out.width = '50%', fig.align="center"}
+# All defaults
+include_graphics("man.png")
+```
+
+Select only the top SNPs for further analysis. This will make it much easier to visualize LD.
+```{r select top SNPs, echo = T, eval = F}
+gwa <- gwa[order(gwa$p) ,] #Rank SNPs by p-values
+
+top.snps <- gwa[1:30 ,] #Select only the top 30 SNPs
+
+top.snps
+```
+
+## Calculate LD
+
+```{r LD gaston, echo = T, eval = F}
+top.snps <- top.snps[order(top.snps$chr, top.snps$pos) ,]
+LD_topsnps <- LD(select.snps(geno, id %in% top.snps$id), lim = c(1, nrow(top.snps) ) )
+```
+
+```{r plot LD with gaston, echo = T, eval = F}
+png("LDplot.png", width = 2000, height = 2000)
+par(mar=c(5.1, 4.1, 4.1, 2.1), mgp=c(3, 1, 0), las=0)
+LD.plot(LD_topsnps, cex.snp = 0.8)
+dev.off()
+```
+
+
+```{r, out.width = '50%', fig.align="center", fig.keep=T}
+# All defaults
+include_graphics("LDplot.png")
+```
+
+## Bayesian network to visualize LD
+Now, we'll use two different types of algorithms for structure learning, a hybrid method (max min hill climb) and a score-based approach (Tabu).
+
+### Subset the top SNPs from GWAS
+```{r subset SNPs, echo = T, eval = F}
+top.geno <- as.matrix(geno)
+top.geno <- top.geno[, colnames(top.geno) %in% top.snps$id] #Create the marker matrix with just the top SNPs
+
+#top.geno <- as.data.frame(top.geno)
+dim(top.geno)
+```
+
+### Constraint-based algorithm: Max min hill climb
+MMHC learns the skeleton of the network first using the max-min parent children (MMPC) algorithm, and directs the edges using a hill-climbing approach.
+
+```{r mmhc, echo = T, eval = F}
+#convert all columns to a factor and output a dataframe
+top.geno_fact <- as.data.frame(apply(top.geno, 2, as.factor))
+
+top.mmhc <- mmhc(x = top.geno_fact)
+```
+
+```{r plot mmhc, echo = T, eval = F}
+png("mmhc1.png", h = 2000, w = 2000)
+graphviz.plot(top.mmhc, shape = "ellipse", main = "mmhc")
+dev.off()
+```
+
+```{r, out.width = '50%'}
+# All defaults
+include_graphics("LDplot.png")
+include_graphics("mmhc1.png")
+```
+
+`bn.learn` class: List with three sublists. The first list `learning` contains the information about the results of the learning algorithm (whitelist, blacklist, type of test, etc). The next `nodes` is a list that contains the Markov blanket (mb) for each node, the neighborhood (nbr) for each node, and the parents and children of the node. The final one is a dataframe that containts the arcs (pairwise links) for the graph.
+
+### Score-based algorithm: Tabu
+Tabu basically starts with a network structure and modifies the structure by adding, removing, or reversing arcs to maximize the score.
+```{r tabu, echo = T, eval = F}
+top.tabu <- tabu(x = top.geno_fact, score = "bde")
+```
+
+
+### Compare approaches
+```{r plot tabu and LD, echo = T, echo = T, eval = F}
+png("tabu1.png", h = 2000, w = 2000)
+graphviz.plot(top.tabu, shape = "ellipse", main = "tabu")
+dev.off()
+```
+
+```{r, out.width = '50%'}
+# All defaults
+include_graphics("LDplot.png")
+include_graphics("tabu1.png")
+```
+
+
+### Bootstrapping
+The idea is to improve the structure learned from data by doing the structure learning step many times on a subset of the samples, and to average over these many structures to find a 'consensus' structure.
+
+#### MMHC
+Here, we set the number of boot strapping samples to 500. So, we'll generate 500 (R=500) structures, and calculate the frequency of pairwise relationships and directions.
+```{r boot mmhc, echo = T, eval = F}
+set.seed(08)
+
+boot_mmhc <- boot.strength(top.geno_fact, algorithm = "mmhc", R = 500) #for the mmhc algorithm
+head(boot_mmhc)
+
+#select pairs with strong linkages
+boot_mmhc[ boot_mmhc$strength >= 0.85 ,]
+```
+
+This is where we average over the structures. Before doing so, we want to retain only the relationships that we see most often (85% of the structures).
+
+```{r model averaging mmhc, echo = T, eval = F}
+ave_model_mmhc <- averaged.network(boot_mmhc, threshold = 0.85)
+```
+
+```{r plots for avgmmhc and mmhc, echo = T, eval = F}
+png("avg_mmhc.png", h = 2000, w = 2000)
+graphviz.plot(ave_model_mmhc, main = "avg mmhc", shape = "ellipse")
+dev.off()
+```
+
+#### Compare LD, MMHC and averaged MMHC networks
+```{r, out.width = '30%'}
+# All defaults
+include_graphics("LDplot.png")
+include_graphics("mmhc1.png")
+include_graphics("avg_mmhc.png")
+```
+
+
+#### Tabu
+And we'll do just the same for Tabu...
+```{r boot tabu, echo = T, eval = F}
+set.seed(08)
+
+boot_tabu <- boot.strength(top.geno_fact, algorithm = "tabu", algorithm.args = list(score = "bde"), R = 500) #for the mmhc algorithm
+head(boot_tabu)
+
+#select pairs with strong linkages
+boot_tabu[ boot_tabu$strength >= 0.85 ,]
+```
+
+```{r model averaging tabu, echo = T, eval = F}
+ave_model_tabu <- averaged.network(boot_tabu, threshold = 0.85)
+```
+
+```{r plots for avgtabu and tabu, echo = T, eval = F}
+png("avg_tabu.png", h = 2000, w = 2000)
+graphviz.plot(ave_model_tabu, shape = "ellipse", main = "avg tabu")
+dev.off()
+```
+
+#### Compare LD, tabu and averaged tabu networks
+```{r, out.width = '30%'}
+include_graphics("LDplot.png")
+include_graphics("tabu1.png")
+include_graphics("avg_tabu.png")
+```
+
+
+# Bayesian Networks for multitrait studies
+One nice application for BN is to examine the probabilistic dependencies between multiple traits. [Topner et al (2017)](http://www.g3journal.org/content/7/8/2779) and [Yu et al (2018)](https://www.biorxiv.org/content/biorxiv/early/2018/10/05/435792.full.pdf) are pretty nice examples of using BN for multitrait studies. Here, we'll use the same phenotypic dataset that we used for GWAS and for MTM and BN.
+
+## MTM
+See Diego's code for a much more thorough explaination of whats going on here.
+
+### Load data
+```{r, echo = T}
+rm(list = ls())
+pheno <- read.csv("salt_phenotypes.csv", row.names = 1)
+pheno.na <- na.omit(pheno)
+dim(pheno.na)
+```
+
+```{bash, echo =T, eval = F}
+plink --file sativas413 --make-bed --out sativas413
+```
+
+
+```{r, echo = T}
+geno <- read.bed.matrix("/Users/malachycampbell/Documents/Dropbox/Work/Presentations/Japan/BN/Data/sativas413")
+geno@ped$id <- paste0("NSFTV_", geno@ped$id)
+geno <- geno[geno@ped$id %in% row.names(pheno.na) ,]
+geno <- select.snps(geno, maf > 0)
+geno <- select.snps(geno, maf > 0.05)
+geno <- select.snps(geno, callrate > 0.9)
+```
+
+### Create the GRM
+```{r, echo = T}
+pheno.na <- pheno.na[match(geno@ped$id, row.names(pheno.na)) ,]
+sum(row.names(pheno.na) == geno@ped$id)
+
+geno <- select.snps(geno, maf > 0.05)
+geno <- select.snps(geno, callrate > 0.9)
+
+grm <- GRM(geno)
+```
+
+
+### MTM model
+
+```{r, echo =T, results = 'hide'}
+Y <- pheno.na
+A <- grm
+
+fmU <- MTM(Y = Y,
+      K = list( list(K = A,COV = list(type = 'UN',df0 = 7,S0 = diag(7) ) ) ),
+      resCov = list(type = 'UN',S0 = diag(7),df0 = 7),
+      nIter = 1200, burnIn = 200, thin = 5, saveAt = 'MTM_salt')
+```
+
+We'll get the genetic values here.
+```{r, echo = T}
+#fmU$YHat # predicitons
+#fmU$resCov$R # residual covariance matrix
+#fmU$K[[1]]$G # genetic covariance matrix
+salt_u <- as.data.frame(fmU$K[[1]]$U) # random effects
+colnames(salt_u) <- names(pheno.na)
+```
+
+For BN we assume that all samples are independent. Is this the case in our data set?
+
+
+
+```{r, echo = T}
+#Cholesky decomposition of G
+Linv <- solve(t(chol(grm)))
+Minv <- kronecker(diag(7), Linv)
+salt_u <- c(as.matrix(salt_u)) #turn the dataframe of genetic values to one long vector
+salt_u_star <- matrix(Minv %*% salt_u, nrow = 363, ncol = 7) #These are our adjusted breeding values. This will just put them in a nice n x t matrix 
+
+colnames(salt_u_star) <- names(pheno.na)
+rm(salt_u)
+```
+
+We can decompose $\mathbf{G}$ into its Cholesky factors $\mathbf{G} = \mathbf{L} \mathbf{L'}$. Here, $\mathbf{L}$ is an $n \times n$ lower triangular matrix. For a single trait we could remove the dependancy from our breeding values $\mathbf{u}$ yielding the adjusted breeding values $\mathbf{u^*}$ by $\mathbf{u^*} = \mathbf{L^{-1}} \mathbf{u}$. However, since we have multiple traits, $\mathbf{u}$ is $(n \times t) \times 1$, where $t$ is the number of traits. So, we will construct a $(n \times t) \times (n \times t)$ matrix $\mathbf{M^{-1}} = \mathbf{I_{(n \times t) \times (n \times t)}} \otimes \mathbf{L^{-1}}$. Now, $\mathbf{u^*} = \mathbf{M^{-1}} \mathbf{u}$
+ 
+
+## Structure Learning
+
+### Constraint-based algorithm: Grow shrink (GS)
+```{r, echo = T}
+salt_u_star <- as.data.frame(salt_u_star)
+gs1 <- gs(salt_u_star, test = "cor", alpha = 0.05)
+```
+
+
+```{r, fig.align = "center", fig.width = 2, fig.height = 2}
+graphviz.plot(gs1, main = "GS")
+```
+
+#### Placing restrictions on the network
+If we have some knowledge of what the network should look like, we can place restrictions on the relationships in the network. BNlearn uses the terms blacklist and whitelist to describe what nodes shouldn't or should be linked respectively. 
+
+```{r, echo = T}
+#Blacklist example 1
+##Place some constraints on the DAG
+tiers <- list("Na.Shoot", names(salt_u_star)[c(1, 3:7)])
+blklist <- tiers2blacklist(tiers)
+
+##Eliminate all nodes leading to Na.K.Shoot
+gs2 <- gs(salt_u_star, blacklist = blklist)
+graphviz.plot(gs2, main = "Blklst1", shape = "ellipse")
+
+#Blacklist example 2
+##Place some constraints on the DAG
+tiers <- list("K.Root.Salt", names(salt_u_star)[c(1:6)])
+blklist <- tiers2blacklist(tiers)
+
+##Eliminate all nodes leading to Na.K.Root
+gs3 <- gs(salt_u_star, test = "cor", alpha = 0.05, blacklist = blklist)
+graphviz.plot(gs3, main = "Blklst2", shape = "ellipse")
+```
+
+### Hybrid-based algorithm: Max-min hill climbing (MMHC)
+```{r, echo = T}
+mmhc1 <- mmhc(salt_u_star)
+```
+
+```{r blacklist examples, echo = T, fig.show='hold', out.width='30%'}
+graphviz.plot(mmhc1, main = "MMHC1", shape = "ellipse")
+```
+
+### Compare structures from GS and MMHC
+```{r, echo = T, fig.show='hold', out.width='50%'}
+graphviz.plot(mmhc1, main = "MMHC1", shape = "ellipse")
+graphviz.plot(gs1, main = "GS", shape = "ellipse")
+```
+
+Very similar structures, but the directions are differnent. How confident can we be about the direction of the edges?
+
+## Model averaging
+
+### Bootstrap resampling
+#### MMHC
+```{r, echo = T}
+set.seed(08)
+
+boot_mmhc<- boot.strength(salt_u_star, algorithm = "mmhc", R = 500) #for the mmhc algorithm
+head(boot_mmhc)
+
+#select pairs with strong linkages
+boot_mmhc[ boot_mmhc$strength >= 0.85 ,]
+```
+
+#### GS
+```{r, echo = T}
+boot_gs<- boot.strength(salt_u_star, algorithm = "gs", algorithm.args = list(test = "cor", alpha = 0.05), R = 500) #for the gs algorithm
+
+boot_gs[ boot_gs$strength >= 0.85 ,]
+```
+
+### Model averaging
+
+#### MMHC
+```{r, echo = T}
+ave_model_mmhc <- averaged.network(boot_mmhc, threshold = 0.85)
+```
+
+```{r, fig.show='hold', out.width='50%'}
+graphviz.plot(mmhc1, main = "MMHC", shape = "ellipse")
+graphviz.plot(ave_model_mmhc, main = "Avg MMHC", shape = "ellipse")
+```
+
+#### GS
+```{r, echo = T}
+ave_model_gs<- averaged.network(boot_gs, threshold = 0.85)
+```
+
+```{r, fig.show='hold', out.width='50%'}
+graphviz.plot(gs1, main = "GS", shape = "ellipse")
+graphviz.plot(ave_model_gs, main = "Avg GS", shape = "ellipse")
+```
+
+#### Comparing DAGs from model averaging
+```{r, echo = T, fig.show='hold', out.width='50%'}
+graphviz.plot(ave_model_gs, main = "Avg GS", shape = "ellipse")
+graphviz.plot(ave_model_mmhc, main = "Avg MMHC", shape = "ellipse")
+```
+
+

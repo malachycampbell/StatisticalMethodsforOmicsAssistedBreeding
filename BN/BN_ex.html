@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="date" content="2018-11-15" />
+
+<title>Genomic Applications of Bayesian Networks</title>
+
+<script src="BN_ex_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="BN_ex_files/bootstrap-3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+<script src="BN_ex_files/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+<script src="BN_ex_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="BN_ex_files/navigation-1.1/tabsets.js"></script>
+<script src="BN_ex_files/navigation-1.1/codefolding.js"></script>
+<link href="BN_ex_files/magnific-popup-1.1.0/magnific-popup.css" rel="stylesheet" />
+<script src="BN_ex_files/magnific-popup-1.1.0/jquery.magnific-popup.min.js"></script>
+<link href="BN_ex_files/clean-0.1/clean.css" rel="stylesheet" />
+<script src="BN_ex_files/clean-0.1/clean.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span. { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+</style>
+<div class="container-fluid main-container">
+  <div class="row">
+     <div class="col-md-10">
+
+
+
+
+<div id="header">
+<h1 class="title">Genomic Applications of Bayesian Networks</h1>
+<h4 class="date"><em>2018-11-15</em></h4>
+</div>
+
+<div id="content">
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 8px;
+}
+h1.title {
+  font-size: 38px;
+  color: DarkRed;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: DarkBlue;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: DarkBlue;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: DarkBlue;
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(bnlearn)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(gaston)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(Rgraphviz)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(pcaMethods)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(BGLR)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(MTM)</a></code></pre></div>
+<div id="visualizing-ld-with-bayesian-networks" class="section level1">
+<h1>Visualizing LD with Bayesian Networks</h1>
+<p>The purpose of this exercise is to characterize LD using a BN approach, and compare the results from the BN with the a conventional pairwise measure of LD. ## GWAS This GWAS is following the same workflow provided by Dr. Iwata. For a more detailed description see his exercises. Here, we will use the PLINK formatted genotypes instead of the VCF formatted genotypes. Both the phenotypic and genotypic data should be in the Data.zip file.</p>
+<div id="load-data" class="section level3">
+<h3>Load data</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">pheno &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;Data/salt_phenotypes.csv&quot;</span>, <span class="dt">row.names =</span> <span class="dv">1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ex">plink</span> --file sativas413_imp --make-bed --out sativas413_imp</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">geno &lt;-<span class="st"> </span><span class="kw">read.bed.matrix</span>(<span class="st">&quot;Data/sativas413_imp&quot;</span>)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">geno<span class="op">@</span>ped<span class="op">$</span>id &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;NSFTV_&quot;</span>, geno<span class="op">@</span>ped<span class="op">$</span>id)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">geno &lt;-<span class="st"> </span>geno[geno<span class="op">@</span>ped<span class="op">$</span>id <span class="op">%in%</span><span class="st"> </span><span class="kw">row.names</span>(pheno), ]</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">geno</a></code></pre></div>
+</div>
+<div id="gwas" class="section level3">
+<h3>GWAS</h3>
+<p>We will use some phenotypic data from RDP1 for Na+, K+, and Na+:K+ content in the roots and shoots. The study is described indepth in <a href="https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006823">Campbell et al (2017)</a>. For GWAS we will focus on Na+ content in the roots.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># First makes sure the order of lines in the phenotypic data matches the</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="co"># genotypic data.</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">pheno &lt;-<span class="st"> </span>pheno[<span class="kw">match</span>(geno<span class="op">@</span>ped<span class="op">$</span>id, <span class="kw">row.names</span>(pheno)), ]</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="kw">sum</span>(<span class="kw">row.names</span>(pheno) <span class="op">==</span><span class="st"> </span>geno<span class="op">@</span>ped<span class="op">$</span>id)</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co"># add phenotypic data to the bed matrix</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">geno<span class="op">@</span>ped<span class="op">$</span>pheno &lt;-<span class="st"> </span>pheno[geno<span class="op">@</span>ped<span class="op">$</span>id, <span class="st">&quot;Na.Root&quot;</span>]</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="co"># Remove missing data and clean up the SNP data</span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">geno &lt;-<span class="st"> </span><span class="kw">select.inds</span>(geno, <span class="op">!</span><span class="kw">is.na</span>(geno<span class="op">@</span>ped<span class="op">$</span>pheno))</a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">geno &lt;-<span class="st"> </span><span class="kw">select.snps</span>(geno, maf <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.05</span>)</a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">geno &lt;-<span class="st"> </span><span class="kw">select.snps</span>(geno, callrate <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.9</span>)</a>
+<a class="sourceLine" id="cb5-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb5-15" data-line-number="15"><span class="co"># Create the GRM</span></a>
+<a class="sourceLine" id="cb5-16" data-line-number="16">grm &lt;-<span class="st"> </span><span class="kw">GRM</span>(geno)</a>
+<a class="sourceLine" id="cb5-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18"><span class="co"># Run GWAS</span></a>
+<a class="sourceLine" id="cb5-19" data-line-number="19">gwa &lt;-<span class="st"> </span><span class="kw">association.test</span>(geno, <span class="dt">method =</span> <span class="st">&quot;lmm&quot;</span>, <span class="dt">response =</span> <span class="st">&quot;quantitative&quot;</span>, <span class="dt">test =</span> <span class="st">&quot;lrt&quot;</span>, </a>
+<a class="sourceLine" id="cb5-20" data-line-number="20">    <span class="dt">eigenK =</span> <span class="kw">eigen</span>(grm), <span class="dt">p =</span> <span class="dv">4</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># Manhattan plot for root Na</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">png</span>(<span class="st">&quot;man.png&quot;</span>, <span class="dt">width =</span> <span class="dv">480</span>, <span class="dt">height =</span> <span class="dv">480</span> <span class="op">*</span><span class="st"> </span><span class="fl">0.75</span>)</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">5.1</span>, <span class="fl">4.1</span>, <span class="fl">4.1</span>, <span class="fl">2.1</span>), <span class="dt">mgp =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="dt">las =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="kw">manhattan</span>(gwa, <span class="dt">pch =</span> <span class="dv">20</span>)</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="kw">dev.off</span>()</a></code></pre></div>
+<p>Notice a major peak on chromosome 4 and a few minor peaks on other chromosomes.</p>
+<p><img src="man.png" width="50%" style="display: block; margin: auto;" /></p>
+<p>Select only the top SNPs for further analysis. This will make it much easier to visualize LD.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">gwa &lt;-<span class="st"> </span>gwa[<span class="kw">order</span>(gwa<span class="op">$</span>p), ]  <span class="co">#Rank SNPs by p-values</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">top.snps &lt;-<span class="st"> </span>gwa[<span class="dv">1</span><span class="op">:</span><span class="dv">30</span>, ]  <span class="co">#Select only the top 30 SNPs</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">top.snps</a></code></pre></div>
+</div>
+<div id="calculate-ld" class="section level2">
+<h2>Calculate LD</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">top.snps &lt;-<span class="st"> </span>top.snps[<span class="kw">order</span>(top.snps<span class="op">$</span>chr, top.snps<span class="op">$</span>pos), ]</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">LD_topsnps &lt;-<span class="st"> </span><span class="kw">LD</span>(<span class="kw">select.snps</span>(geno, id <span class="op">%in%</span><span class="st"> </span>top.snps<span class="op">$</span>id), <span class="dt">lim =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="kw">nrow</span>(top.snps)))</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">png</span>(<span class="st">&quot;LDplot.png&quot;</span>, <span class="dt">width =</span> <span class="dv">2000</span>, <span class="dt">height =</span> <span class="dv">2000</span>)</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">5.1</span>, <span class="fl">4.1</span>, <span class="fl">4.1</span>, <span class="fl">2.1</span>), <span class="dt">mgp =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="dt">las =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="kw">LD.plot</span>(LD_topsnps, <span class="dt">cex.snp =</span> <span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="kw">dev.off</span>()</a></code></pre></div>
+<p><img src="LDplot.png" width="50%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="bayesian-network-to-visualize-ld" class="section level2">
+<h2>Bayesian network to visualize LD</h2>
+<p>Now, we’ll use two different types of algorithms for structure learning, a hybrid method (max min hill climb) and a score-based approach (Tabu).</p>
+<div id="subset-the-top-snps-from-gwas" class="section level3">
+<h3>Subset the top SNPs from GWAS</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">top.geno &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(geno)</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">top.geno &lt;-<span class="st"> </span>top.geno[, <span class="kw">colnames</span>(top.geno) <span class="op">%in%</span><span class="st"> </span>top.snps<span class="op">$</span>id]  <span class="co">#Create the marker matrix with just the top SNPs</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="co"># top.geno &lt;- as.data.frame(top.geno)</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="kw">dim</span>(top.geno)</a></code></pre></div>
+</div>
+<div id="constraint-based-algorithm-max-min-hill-climb" class="section level3">
+<h3>Constraint-based algorithm: Max min hill climb</h3>
+<p>MMHC learns the skeleton of the network first using the max-min parent children (MMPC) algorithm, and directs the edges using a hill-climbing approach.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co"># convert all columns to a factor and output a dataframe</span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">top.geno_fact &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">apply</span>(top.geno, <span class="dv">2</span>, as.factor))</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">top.mmhc &lt;-<span class="st"> </span><span class="kw">mmhc</span>(<span class="dt">x =</span> top.geno_fact)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">png</span>(<span class="st">&quot;mmhc1.png&quot;</span>, <span class="dt">h =</span> <span class="dv">2000</span>, <span class="dt">w =</span> <span class="dv">2000</span>)</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw">graphviz.plot</span>(top.mmhc, <span class="dt">shape =</span> <span class="st">&quot;ellipse&quot;</span>, <span class="dt">main =</span> <span class="st">&quot;mmhc&quot;</span>)</a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="kw">dev.off</span>()</a></code></pre></div>
+<p><img src="LDplot.png" width="50%" /><img src="mmhc1.png" width="50%" /></p>
+<p><code>bn.learn</code> class: List with three sublists. The first list <code>learning</code> contains the information about the results of the learning algorithm (whitelist, blacklist, type of test, etc). The next <code>nodes</code> is a list that contains the Markov blanket (mb) for each node, the neighborhood (nbr) for each node, and the parents and children of the node. The final one is a dataframe that containts the arcs (pairwise links) for the graph.</p>
+</div>
+<div id="score-based-algorithm-tabu" class="section level3">
+<h3>Score-based algorithm: Tabu</h3>
+<p>Tabu basically starts with a network structure and modifies the structure by adding, removing, or reversing arcs to maximize the score.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">top.tabu &lt;-<span class="st"> </span><span class="kw">tabu</span>(<span class="dt">x =</span> top.geno_fact, <span class="dt">score =</span> <span class="st">&quot;bde&quot;</span>)</a></code></pre></div>
+</div>
+<div id="compare-approaches" class="section level3">
+<h3>Compare approaches</h3>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">png</span>(<span class="st">&quot;tabu1.png&quot;</span>, <span class="dt">h =</span> <span class="dv">2000</span>, <span class="dt">w =</span> <span class="dv">2000</span>)</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="kw">graphviz.plot</span>(top.tabu, <span class="dt">shape =</span> <span class="st">&quot;ellipse&quot;</span>, <span class="dt">main =</span> <span class="st">&quot;tabu&quot;</span>)</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="kw">dev.off</span>()</a></code></pre></div>
+<p><img src="LDplot.png" width="50%" /><img src="tabu1.png" width="50%" /></p>
+</div>
+<div id="bootstrapping" class="section level3">
+<h3>Bootstrapping</h3>
+<p>The idea is to improve the structure learned from data by doing the structure learning step many times on a subset of the samples, and to average over these many structures to find a ‘consensus’ structure.</p>
+<div id="mmhc" class="section level4">
+<h4>MMHC</h4>
+<p>Here, we set the number of boot strapping samples to 500. So, we’ll generate 500 (R=500) structures, and calculate the frequency of pairwise relationships and directions.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">8</span>)</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">boot_mmhc &lt;-<span class="st"> </span><span class="kw">boot.strength</span>(top.geno_fact, <span class="dt">algorithm =</span> <span class="st">&quot;mmhc&quot;</span>, <span class="dt">R =</span> <span class="dv">500</span>)  <span class="co">#for the mmhc algorithm</span></a>
+<a class="sourceLine" id="cb15-4" data-line-number="4"><span class="kw">head</span>(boot_mmhc)</a>
+<a class="sourceLine" id="cb15-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb15-6" data-line-number="6"><span class="co"># select pairs with strong linkages</span></a>
+<a class="sourceLine" id="cb15-7" data-line-number="7">boot_mmhc[boot_mmhc<span class="op">$</span>strength <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.85</span>, ]</a></code></pre></div>
+<p>This is where we average over the structures. Before doing so, we want to retain only the relationships that we see most often (85% of the structures).</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">ave_model_mmhc &lt;-<span class="st"> </span><span class="kw">averaged.network</span>(boot_mmhc, <span class="dt">threshold =</span> <span class="fl">0.85</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">png</span>(<span class="st">&quot;avg_mmhc.png&quot;</span>, <span class="dt">h =</span> <span class="dv">2000</span>, <span class="dt">w =</span> <span class="dv">2000</span>)</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2"><span class="kw">graphviz.plot</span>(ave_model_mmhc, <span class="dt">main =</span> <span class="st">&quot;avg mmhc&quot;</span>, <span class="dt">shape =</span> <span class="st">&quot;ellipse&quot;</span>)</a>
+<a class="sourceLine" id="cb17-3" data-line-number="3"><span class="kw">dev.off</span>()</a></code></pre></div>
+</div>
+<div id="compare-ld-mmhc-and-averaged-mmhc-networks" class="section level4">
+<h4>Compare LD, MMHC and averaged MMHC networks</h4>
+<p><img src="LDplot.png" width="30%" /><img src="mmhc1.png" width="30%" /><img src="avg_mmhc.png" width="30%" /></p>
+</div>
+<div id="tabu" class="section level4">
+<h4>Tabu</h4>
+<p>And we’ll do just the same for Tabu…</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">8</span>)</a>
+<a class="sourceLine" id="cb18-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb18-3" data-line-number="3">boot_tabu &lt;-<span class="st"> </span><span class="kw">boot.strength</span>(top.geno_fact, <span class="dt">algorithm =</span> <span class="st">&quot;tabu&quot;</span>, <span class="dt">algorithm.args =</span> <span class="kw">list</span>(<span class="dt">score =</span> <span class="st">&quot;bde&quot;</span>), </a>
+<a class="sourceLine" id="cb18-4" data-line-number="4">    <span class="dt">R =</span> <span class="dv">500</span>)  <span class="co">#for the mmhc algorithm</span></a>
+<a class="sourceLine" id="cb18-5" data-line-number="5"><span class="kw">head</span>(boot_tabu)</a>
+<a class="sourceLine" id="cb18-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb18-7" data-line-number="7"><span class="co"># select pairs with strong linkages</span></a>
+<a class="sourceLine" id="cb18-8" data-line-number="8">boot_tabu[boot_tabu<span class="op">$</span>strength <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.85</span>, ]</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">ave_model_tabu &lt;-<span class="st"> </span><span class="kw">averaged.network</span>(boot_tabu, <span class="dt">threshold =</span> <span class="fl">0.85</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">png</span>(<span class="st">&quot;avg_tabu.png&quot;</span>, <span class="dt">h =</span> <span class="dv">2000</span>, <span class="dt">w =</span> <span class="dv">2000</span>)</a>
+<a class="sourceLine" id="cb20-2" data-line-number="2"><span class="kw">graphviz.plot</span>(ave_model_tabu, <span class="dt">shape =</span> <span class="st">&quot;ellipse&quot;</span>, <span class="dt">main =</span> <span class="st">&quot;avg tabu&quot;</span>)</a>
+<a class="sourceLine" id="cb20-3" data-line-number="3"><span class="kw">dev.off</span>()</a></code></pre></div>
+</div>
+<div id="compare-ld-tabu-and-averaged-tabu-networks" class="section level4">
+<h4>Compare LD, tabu and averaged tabu networks</h4>
+<p><img src="LDplot.png" width="30%" /><img src="tabu1.png" width="30%" /><img src="avg_tabu.png" width="30%" /></p>
+</div>
+</div>
+</div>
+</div>
+<div id="bayesian-networks-for-multitrait-studies" class="section level1">
+<h1>Bayesian Networks for multitrait studies</h1>
+<p>One nice application for BN is to examine the probabilistic dependencies between multiple traits. <a href="http://www.g3journal.org/content/7/8/2779">Topner et al (2017)</a> and <a href="https://www.biorxiv.org/content/biorxiv/early/2018/10/05/435792.full.pdf">Yu et al (2018)</a> are pretty nice examples of using BN for multitrait studies. Here, we’ll use the same phenotypic dataset that we used for GWAS and for MTM and BN.</p>
+<div id="mtm" class="section level2">
+<h2>MTM</h2>
+<p>See Diego’s code for a much more thorough explaination of whats going on here.</p>
+<div id="load-data-1" class="section level3">
+<h3>Load data</h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw">rm</span>(<span class="dt">list =</span> <span class="kw">ls</span>())</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2">pheno &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;salt_phenotypes.csv&quot;</span>, <span class="dt">row.names =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb21-3" data-line-number="3">pheno.na &lt;-<span class="st"> </span><span class="kw">na.omit</span>(pheno)</a>
+<a class="sourceLine" id="cb21-4" data-line-number="4"><span class="kw">dim</span>(pheno.na)</a></code></pre></div>
+<pre><code>[1] 366   7</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="ex">plink</span> --file sativas413 --make-bed --out sativas413</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">geno &lt;-<span class="st"> </span><span class="kw">read.bed.matrix</span>(<span class="st">&quot;/Users/malachycampbell/Documents/Dropbox/Work/Presentations/Japan/BN/Data/sativas413&quot;</span>)</a></code></pre></div>
+<pre><code>Reading /Users/malachycampbell/Documents/Dropbox/Work/Presentations/Japan/BN/Data/sativas413.fam 
+Reading /Users/malachycampbell/Documents/Dropbox/Work/Presentations/Japan/BN/Data/sativas413.bim 
+Reading /Users/malachycampbell/Documents/Dropbox/Work/Presentations/Japan/BN/Data/sativas413.bed 
+ped stats and snps stats have been set. 
+&#39;p&#39; has been set. 
+&#39;mu&#39; and &#39;sigma&#39; have been set.</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">geno<span class="op">@</span>ped<span class="op">$</span>id &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;NSFTV_&quot;</span>, geno<span class="op">@</span>ped<span class="op">$</span>id)</a>
+<a class="sourceLine" id="cb26-2" data-line-number="2">geno &lt;-<span class="st"> </span>geno[geno<span class="op">@</span>ped<span class="op">$</span>id <span class="op">%in%</span><span class="st"> </span><span class="kw">row.names</span>(pheno.na), ]</a>
+<a class="sourceLine" id="cb26-3" data-line-number="3">geno &lt;-<span class="st"> </span><span class="kw">select.snps</span>(geno, maf <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb26-4" data-line-number="4">geno &lt;-<span class="st"> </span><span class="kw">select.snps</span>(geno, maf <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.05</span>)</a>
+<a class="sourceLine" id="cb26-5" data-line-number="5">geno &lt;-<span class="st"> </span><span class="kw">select.snps</span>(geno, callrate <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.9</span>)</a></code></pre></div>
+</div>
+<div id="create-the-grm" class="section level3">
+<h3>Create the GRM</h3>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">pheno.na &lt;-<span class="st"> </span>pheno.na[<span class="kw">match</span>(geno<span class="op">@</span>ped<span class="op">$</span>id, <span class="kw">row.names</span>(pheno.na)), ]</a>
+<a class="sourceLine" id="cb27-2" data-line-number="2"><span class="kw">sum</span>(<span class="kw">row.names</span>(pheno.na) <span class="op">==</span><span class="st"> </span>geno<span class="op">@</span>ped<span class="op">$</span>id)</a></code></pre></div>
+<pre><code>[1] 363</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">geno &lt;-<span class="st"> </span><span class="kw">select.snps</span>(geno, maf <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.05</span>)</a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">geno &lt;-<span class="st"> </span><span class="kw">select.snps</span>(geno, callrate <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.9</span>)</a>
+<a class="sourceLine" id="cb29-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">grm &lt;-<span class="st"> </span><span class="kw">GRM</span>(geno)</a></code></pre></div>
+</div>
+<div id="mtm-model" class="section level3">
+<h3>MTM model</h3>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">Y &lt;-<span class="st"> </span>pheno.na</a>
+<a class="sourceLine" id="cb30-2" data-line-number="2">A &lt;-<span class="st"> </span>grm</a>
+<a class="sourceLine" id="cb30-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb30-4" data-line-number="4">fmU &lt;-<span class="st"> </span><span class="kw">MTM</span>(<span class="dt">Y =</span> Y, <span class="dt">K =</span> <span class="kw">list</span>(<span class="kw">list</span>(<span class="dt">K =</span> A, <span class="dt">COV =</span> <span class="kw">list</span>(<span class="dt">type =</span> <span class="st">&quot;UN&quot;</span>, <span class="dt">df0 =</span> <span class="dv">7</span>, <span class="dt">S0 =</span> <span class="kw">diag</span>(<span class="dv">7</span>)))), </a>
+<a class="sourceLine" id="cb30-5" data-line-number="5">    <span class="dt">resCov =</span> <span class="kw">list</span>(<span class="dt">type =</span> <span class="st">&quot;UN&quot;</span>, <span class="dt">S0 =</span> <span class="kw">diag</span>(<span class="dv">7</span>), <span class="dt">df0 =</span> <span class="dv">7</span>), <span class="dt">nIter =</span> <span class="dv">1200</span>, <span class="dt">burnIn =</span> <span class="dv">200</span>, </a>
+<a class="sourceLine" id="cb30-6" data-line-number="6">    <span class="dt">thin =</span> <span class="dv">5</span>, <span class="dt">saveAt =</span> <span class="st">&quot;MTM_salt&quot;</span>)</a></code></pre></div>
+<p>We’ll get the genetic values here.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="co"># fmU$YHat # predicitons fmU$resCov$R # residual covariance matrix</span></a>
+<a class="sourceLine" id="cb31-2" data-line-number="2"><span class="co"># fmU$K[[1]]$G # genetic covariance matrix</span></a>
+<a class="sourceLine" id="cb31-3" data-line-number="3">salt_u &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(fmU<span class="op">$</span>K[[<span class="dv">1</span>]]<span class="op">$</span>U)  <span class="co"># random effects</span></a>
+<a class="sourceLine" id="cb31-4" data-line-number="4"><span class="kw">colnames</span>(salt_u) &lt;-<span class="st"> </span><span class="kw">names</span>(pheno.na)</a></code></pre></div>
+<p>For BN we assume that all samples are independent. Is this the case in our data set?</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="co"># Cholesky decomposition of G</span></a>
+<a class="sourceLine" id="cb32-2" data-line-number="2">Linv &lt;-<span class="st"> </span><span class="kw">solve</span>(<span class="kw">t</span>(<span class="kw">chol</span>(grm)))</a>
+<a class="sourceLine" id="cb32-3" data-line-number="3">Minv &lt;-<span class="st"> </span><span class="kw">kronecker</span>(<span class="kw">diag</span>(<span class="dv">7</span>), Linv)</a>
+<a class="sourceLine" id="cb32-4" data-line-number="4">salt_u &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">as.matrix</span>(salt_u))  <span class="co">#turn the dataframe of genetic values to one long vector</span></a>
+<a class="sourceLine" id="cb32-5" data-line-number="5">salt_u_star &lt;-<span class="st"> </span><span class="kw">matrix</span>(Minv <span class="op">%*%</span><span class="st"> </span>salt_u, <span class="dt">nrow =</span> <span class="dv">363</span>, <span class="dt">ncol =</span> <span class="dv">7</span>)  <span class="co">#These are our adjusted breeding values. This will just put them in a nice n x t matrix </span></a>
+<a class="sourceLine" id="cb32-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb32-7" data-line-number="7"><span class="kw">colnames</span>(salt_u_star) &lt;-<span class="st"> </span><span class="kw">names</span>(pheno.na)</a>
+<a class="sourceLine" id="cb32-8" data-line-number="8"><span class="kw">rm</span>(salt_u)</a></code></pre></div>
+<p>We can decompose <span class="math inline">\(\mathbf{G}\)</span> into its Cholesky factors <span class="math inline">\(\mathbf{G} = \mathbf{L} \mathbf{L&#39;}\)</span>. Here, <span class="math inline">\(\mathbf{L}\)</span> is an <span class="math inline">\(n \times n\)</span> lower triangular matrix. For a single trait we could remove the dependancy from our breeding values <span class="math inline">\(\mathbf{u}\)</span> yielding the adjusted breeding values <span class="math inline">\(\mathbf{u^*}\)</span> by <span class="math inline">\(\mathbf{u^*} = \mathbf{L^{-1}} \mathbf{u}\)</span>. However, since we have multiple traits, <span class="math inline">\(\mathbf{u}\)</span> is <span class="math inline">\((n \times t) \times 1\)</span>, where <span class="math inline">\(t\)</span> is the number of traits. So, we will construct a <span class="math inline">\((n \times t) \times (n \times t)\)</span> matrix <span class="math inline">\(\mathbf{M^{-1}} = \mathbf{I_{(n \times t) \times (n \times t)}} \otimes \mathbf{L^{-1}}\)</span>. Now, <span class="math inline">\(\mathbf{u^*} = \mathbf{M^{-1}} \mathbf{u}\)</span></p>
+</div>
+</div>
+<div id="structure-learning" class="section level2">
+<h2>Structure Learning</h2>
+<div id="constraint-based-algorithm-grow-shrink-gs" class="section level3">
+<h3>Constraint-based algorithm: Grow shrink (GS)</h3>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1">salt_u_star &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(salt_u_star)</a>
+<a class="sourceLine" id="cb33-2" data-line-number="2">gs1 &lt;-<span class="st"> </span><span class="kw">gs</span>(salt_u_star, <span class="dt">test =</span> <span class="st">&quot;cor&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>)</a></code></pre></div>
+<p><img src="BN_ex_files/figure-html/unnamed-chunk-15-1.png" width="192" style="display: block; margin: auto;" /></p>
+<div id="placing-restrictions-on-the-network" class="section level4">
+<h4>Placing restrictions on the network</h4>
+<p>If we have some knowledge of what the network should look like, we can place restrictions on the relationships in the network. BNlearn uses the terms blacklist and whitelist to describe what nodes shouldn’t or should be linked respectively.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="co"># Blacklist example 1 Place some constraints on the DAG</span></a>
+<a class="sourceLine" id="cb34-2" data-line-number="2">tiers &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="st">&quot;Na.Shoot&quot;</span>, <span class="kw">names</span>(salt_u_star)[<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span><span class="op">:</span><span class="dv">7</span>)])</a>
+<a class="sourceLine" id="cb34-3" data-line-number="3">blklist &lt;-<span class="st"> </span><span class="kw">tiers2blacklist</span>(tiers)</a>
+<a class="sourceLine" id="cb34-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb34-5" data-line-number="5"><span class="co">## Eliminate all nodes leading to Na.K.Shoot</span></a>
+<a class="sourceLine" id="cb34-6" data-line-number="6">gs2 &lt;-<span class="st"> </span><span class="kw">gs</span>(salt_u_star, <span class="dt">blacklist =</span> blklist)</a>
+<a class="sourceLine" id="cb34-7" data-line-number="7"><span class="kw">graphviz.plot</span>(gs2, <span class="dt">main =</span> <span class="st">&quot;Blklst1&quot;</span>, <span class="dt">shape =</span> <span class="st">&quot;ellipse&quot;</span>)</a></code></pre></div>
+<p><img src="BN_ex_files/figure-html/unnamed-chunk-16-1.png" width="576" /></p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="co"># Blacklist example 2 Place some constraints on the DAG</span></a>
+<a class="sourceLine" id="cb35-2" data-line-number="2">tiers &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="st">&quot;K.Root.Salt&quot;</span>, <span class="kw">names</span>(salt_u_star)[<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>)])</a>
+<a class="sourceLine" id="cb35-3" data-line-number="3">blklist &lt;-<span class="st"> </span><span class="kw">tiers2blacklist</span>(tiers)</a>
+<a class="sourceLine" id="cb35-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb35-5" data-line-number="5"><span class="co">## Eliminate all nodes leading to Na.K.Root</span></a>
+<a class="sourceLine" id="cb35-6" data-line-number="6">gs3 &lt;-<span class="st"> </span><span class="kw">gs</span>(salt_u_star, <span class="dt">test =</span> <span class="st">&quot;cor&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>, <span class="dt">blacklist =</span> blklist)</a>
+<a class="sourceLine" id="cb35-7" data-line-number="7"><span class="kw">graphviz.plot</span>(gs3, <span class="dt">main =</span> <span class="st">&quot;Blklst2&quot;</span>, <span class="dt">shape =</span> <span class="st">&quot;ellipse&quot;</span>)</a></code></pre></div>
+<p><img src="BN_ex_files/figure-html/unnamed-chunk-16-2.png" width="576" /></p>
+</div>
+</div>
+<div id="hybrid-based-algorithm-max-min-hill-climbing-mmhc" class="section level3">
+<h3>Hybrid-based algorithm: Max-min hill climbing (MMHC)</h3>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1">mmhc1 &lt;-<span class="st"> </span><span class="kw">mmhc</span>(salt_u_star)</a></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">graphviz.plot</span>(mmhc1, <span class="dt">main =</span> <span class="st">&quot;MMHC1&quot;</span>, <span class="dt">shape =</span> <span class="st">&quot;ellipse&quot;</span>)</a></code></pre></div>
+<p><img src="BN_ex_files/figure-html/blacklist%20examples-1.png" width="30%" /></p>
+</div>
+<div id="compare-structures-from-gs-and-mmhc" class="section level3">
+<h3>Compare structures from GS and MMHC</h3>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1"><span class="kw">graphviz.plot</span>(mmhc1, <span class="dt">main =</span> <span class="st">&quot;MMHC1&quot;</span>, <span class="dt">shape =</span> <span class="st">&quot;ellipse&quot;</span>)</a>
+<a class="sourceLine" id="cb38-2" data-line-number="2"><span class="kw">graphviz.plot</span>(gs1, <span class="dt">main =</span> <span class="st">&quot;GS&quot;</span>, <span class="dt">shape =</span> <span class="st">&quot;ellipse&quot;</span>)</a></code></pre></div>
+<p><img src="BN_ex_files/figure-html/unnamed-chunk-18-1.png" width="50%" /><img src="BN_ex_files/figure-html/unnamed-chunk-18-2.png" width="50%" /></p>
+<p>Very similar structures, but the directions are differnent. How confident can we be about the direction of the edges?</p>
+</div>
+</div>
+<div id="model-averaging" class="section level2">
+<h2>Model averaging</h2>
+<div id="bootstrap-resampling" class="section level3">
+<h3>Bootstrap resampling</h3>
+<div id="mmhc-1" class="section level4">
+<h4>MMHC</h4>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">8</span>)</a>
+<a class="sourceLine" id="cb39-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb39-3" data-line-number="3">boot_mmhc &lt;-<span class="st"> </span><span class="kw">boot.strength</span>(salt_u_star, <span class="dt">algorithm =</span> <span class="st">&quot;mmhc&quot;</span>, <span class="dt">R =</span> <span class="dv">500</span>)  <span class="co">#for the mmhc algorithm</span></a>
+<a class="sourceLine" id="cb39-4" data-line-number="4"><span class="kw">head</span>(boot_mmhc)</a></code></pre></div>
+<pre><code>        from              to strength direction
+1 Na.K.Shoot        Na.Shoot    1.000 0.9680000
+2 Na.K.Shoot    K.Shoot.Salt    0.124 0.7419355
+3 Na.K.Shoot K.Shoot.Control    0.000 0.0000000
+4 Na.K.Shoot       Na.K.Root    1.000 0.5190000
+5 Na.K.Shoot         Na.Root    0.014 0.9285714
+6 Na.K.Shoot     K.Root.Salt    0.010 0.5000000</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="co"># select pairs with strong linkages</span></a>
+<a class="sourceLine" id="cb41-2" data-line-number="2">boot_mmhc[boot_mmhc<span class="op">$</span>strength <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.85</span>, ]</a></code></pre></div>
+<pre><code>              from              to strength direction
+1       Na.K.Shoot        Na.Shoot    1.000 0.9680000
+4       Na.K.Shoot       Na.K.Root    1.000 0.5190000
+7         Na.Shoot      Na.K.Shoot    1.000 0.0320000
+8         Na.Shoot    K.Shoot.Salt    1.000 0.0330000
+14    K.Shoot.Salt        Na.Shoot    1.000 0.9670000
+15    K.Shoot.Salt K.Shoot.Control    1.000 0.4820000
+21 K.Shoot.Control    K.Shoot.Salt    1.000 0.5180000
+25       Na.K.Root      Na.K.Shoot    1.000 0.4810000
+29       Na.K.Root         Na.Root    1.000 0.5890000
+30       Na.K.Root     K.Root.Salt    0.954 0.5503145
+35         Na.Root       Na.K.Root    1.000 0.4110000
+36         Na.Root     K.Root.Salt    1.000 0.4530000
+41     K.Root.Salt       Na.K.Root    0.954 0.4496855
+42     K.Root.Salt         Na.Root    1.000 0.5470000</code></pre>
+</div>
+<div id="gs" class="section level4">
+<h4>GS</h4>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1">boot_gs &lt;-<span class="st"> </span><span class="kw">boot.strength</span>(salt_u_star, <span class="dt">algorithm =</span> <span class="st">&quot;gs&quot;</span>, <span class="dt">algorithm.args =</span> <span class="kw">list</span>(<span class="dt">test =</span> <span class="st">&quot;cor&quot;</span>, </a>
+<a class="sourceLine" id="cb43-2" data-line-number="2">    <span class="dt">alpha =</span> <span class="fl">0.05</span>), <span class="dt">R =</span> <span class="dv">500</span>)  <span class="co">#for the gs algorithm</span></a>
+<a class="sourceLine" id="cb43-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb43-4" data-line-number="4">boot_gs[boot_gs<span class="op">$</span>strength <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.85</span>, ]</a></code></pre></div>
+<pre><code>              from              to strength direction
+1       Na.K.Shoot        Na.Shoot    1.000 0.9030000
+4       Na.K.Shoot       Na.K.Root    1.000 0.4480000
+7         Na.Shoot      Na.K.Shoot    1.000 0.0970000
+8         Na.Shoot    K.Shoot.Salt    1.000 0.1100000
+14    K.Shoot.Salt        Na.Shoot    1.000 0.8900000
+15    K.Shoot.Salt K.Shoot.Control    1.000 0.5080000
+21 K.Shoot.Control    K.Shoot.Salt    1.000 0.4920000
+25       Na.K.Root      Na.K.Shoot    1.000 0.5520000
+29       Na.K.Root         Na.Root    1.000 0.4670000
+30       Na.K.Root     K.Root.Salt    0.998 0.5551102
+35         Na.Root       Na.K.Root    1.000 0.5330000
+36         Na.Root     K.Root.Salt    1.000 0.5580000
+41     K.Root.Salt       Na.K.Root    0.998 0.4448898
+42     K.Root.Salt         Na.Root    1.000 0.4420000</code></pre>
+</div>
+</div>
+<div id="model-averaging-1" class="section level3">
+<h3>Model averaging</h3>
+<div id="mmhc-2" class="section level4">
+<h4>MMHC</h4>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" data-line-number="1">ave_model_mmhc &lt;-<span class="st"> </span><span class="kw">averaged.network</span>(boot_mmhc, <span class="dt">threshold =</span> <span class="fl">0.85</span>)</a></code></pre></div>
+<p><img src="BN_ex_files/figure-html/unnamed-chunk-22-1.png" width="50%" /><img src="BN_ex_files/figure-html/unnamed-chunk-22-2.png" width="50%" /></p>
+</div>
+<div id="gs-1" class="section level4">
+<h4>GS</h4>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" data-line-number="1">ave_model_gs &lt;-<span class="st"> </span><span class="kw">averaged.network</span>(boot_gs, <span class="dt">threshold =</span> <span class="fl">0.85</span>)</a></code></pre></div>
+<p><img src="BN_ex_files/figure-html/unnamed-chunk-24-1.png" width="50%" /><img src="BN_ex_files/figure-html/unnamed-chunk-24-2.png" width="50%" /></p>
+</div>
+<div id="comparing-dags-from-model-averaging" class="section level4">
+<h4>Comparing DAGs from model averaging</h4>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" data-line-number="1"><span class="kw">graphviz.plot</span>(ave_model_gs, <span class="dt">main =</span> <span class="st">&quot;Avg GS&quot;</span>, <span class="dt">shape =</span> <span class="st">&quot;ellipse&quot;</span>)</a>
+<a class="sourceLine" id="cb47-2" data-line-number="2"><span class="kw">graphviz.plot</span>(ave_model_mmhc, <span class="dt">main =</span> <span class="st">&quot;Avg MMHC&quot;</span>, <span class="dt">shape =</span> <span class="st">&quot;ellipse&quot;</span>)</a></code></pre></div>
+<p><img src="BN_ex_files/figure-html/unnamed-chunk-25-1.png" width="50%" /><img src="BN_ex_files/figure-html/unnamed-chunk-25-2.png" width="50%" /></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+    <div class="col-md-2">
+            <div id="toc">
+      	<button type="button" class="close">×</button>
+        <ul>
+        <li><a href="#visualizing-ld-with-bayesian-networks">Visualizing LD with Bayesian Networks</a><ul>
+        <li><a href="#calculate-ld">Calculate LD</a></li>
+        <li><a href="#bayesian-network-to-visualize-ld">Bayesian network to visualize LD</a></li>
+        </ul></li>
+        <li><a href="#bayesian-networks-for-multitrait-studies">Bayesian Networks for multitrait studies</a><ul>
+        <li><a href="#mtm">MTM</a></li>
+        <li><a href="#structure-learning">Structure Learning</a></li>
+        <li><a href="#model-averaging">Model averaging</a></li>
+        </ul></li>
+        </ul>
+      </div>
+          </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function () {
+
+  // add bootstrap table styles to pandoc tables
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+
+});
+</script>
+
+<script>
+$(document).ready(function () {
+ 	 	$('#content img')
+ 	  .addClass("image-thumb");
+      $('#content img')
+ 	  .addClass("image-lb");
+  $('#content').magnificPopup({
+	      type:'image',
+	      closeOnContentClick: false,
+	      closeBtnInside: false,
+	      delegate: 'img',
+	      gallery: {enabled: false },
+	      image: {
+	        verticalFit: true,
+          titleSrc: 'alt'
+	      }
+ 	    });
+ 	});
+</script>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
