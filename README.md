@@ -75,7 +75,7 @@ Slides for short course on 'omics assisted breeding methods.
   - 12:00-13:00 Lunch 
   - 13:00-15:00 Bayesian network (MC, GM) 
       - Slides [[PDF Slides]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/BN/BN_lec.pdf)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/BN/BN_lec.Rmd)
-      - Exercises [[HTML]](https://htmlpreview.github.io/?https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/BN/BN_ex.html)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/BN/BN_ex.Rmd)
+      - Exercises [[HTML]](https://htmlpreview.github.io/?https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/BN/BN_ex.html)[[.Rmd]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/BN/BN_ex.Rmd)[[Data]](https://github.com/malachycampbell/StatisticalMethodsforOmicsAssistedBreeding/blob/master/BN/Data.zip)
   - 15:00-15:10 Break
   - 15:10-17:00 Experimental design + Optimal designs (ET)
 
